@@ -56,7 +56,7 @@ namespace BPMPlus.Controllers
                     isFormActive = c.FormIsActive,
                     FormActive = c.FormIsActive ? "生效" : "作廢",
                 }).ToList();
-
+            //;ljpojpo
             // 設置前端下拉選單
             ViewBag.Department = new SelectList(_context.Department, "DepartmentId", "DepartmentName");
             ViewBag.Category = new SelectList(_context.Category, "CategoryId", "CategoryDescription");
