@@ -1,0 +1,492 @@
+﻿@model BPMPlus.ViewModels.FormDetailsGroupViewModel
+
+
+@section Style {
+
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="~/AdminLTE/plugins/fontawesome-free/css/all.min.css">
+    <!-- daterange picker -->
+    <link rel="stylesheet" href="~/AdminLTE/plugins/daterangepicker/daterangepicker.css">
+    <!-- iCheck for checkboxes and radio inputs -->
+    <link rel="stylesheet" href="~/AdminLTE/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <!-- Bootstrap Color Picker -->
+    <link rel="stylesheet" href="~/AdminLTE/plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css">
+    <!-- Tempusdominus Bootstrap 4 -->
+    <link rel="stylesheet" href="~/AdminLTE/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+    <!-- Select2 -->
+    <link rel="stylesheet" href="~/AdminLTE/plugins/select2/css/select2.min.css">
+    <link rel="stylesheet" href="~/AdminLTE/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+    <!-- Bootstrap4 Duallistbox -->
+    <link rel="stylesheet" href="~/AdminLTE/plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css">
+    <!-- BS Stepper -->
+    <link rel="stylesheet" href="~/AdminLTE/plugins/bs-stepper/css/bs-stepper.min.css">
+    <!-- dropzonejs -->
+    <link rel="stylesheet" href="~/AdminLTE/plugins/dropzone/min/dropzone.min.css">
+    <!-- Theme style -->
+@*     <link rel="stylesheet" href="~/AdminLTE/dist/css/adminlte.min.css"> *@
+    <link rel="stylesheet" href="~/font-awesome/css/all.css" />
+    <style>
+        .content-wrapper {
+            background-image: linear-gradient(120deg, #ffffff 0%, #0079ff2e 100%);
+        }
+
+        .wrapper.backcolor {
+            padding: 2.5px;
+        }
+
+        .title {
+            color: rgba(0, 81, 255, 0.884);
+            font-weight: bold;
+            margin-bottom:30px;
+        }
+
+        .item-name {
+            padding-right: 1%;
+            width: 28%;
+        }
+
+        .item-value {
+            width: 0%;
+        }
+
+        .button {
+            width: 12 %;
+        }
+
+        .btn-link {
+            color: white;
+        }
+
+        .button-icon {
+            width: 20%;
+        }
+
+        .process-node {
+            background-color: rgb(232, 244, 255);
+            height: 200px;
+        }
+
+        textarea {
+            resize: none;
+        }
+
+        .txt-box {
+            width: 50%;
+        }
+
+        .selection {
+            width: 50%;
+        }
+
+        .date {
+            width: 50%;
+        }
+
+        .content {
+            padding: 10px;
+        }
+
+        .form-group {
+            display: flex;
+        }
+
+        .table-container {
+            max-height: 300px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        table {
+            text-align: center;
+            line-height: 1.5;
+            width: 100%;
+            table-layout: fixed; /* 固定表格佈局 */
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        thead {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            background-color: #fff; /* 確保標題背景不透明 */
+        }
+
+            /* 固定表頭 */
+            thead th {
+                position: sticky; /* 表頭固定 */
+                top: 0; /* 固定在頂部 */
+                z-index: 1; /* 確保表頭位於內容上方 */
+            }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2; /* 為標題添加背景色 */
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9; /* 為偶數行添加背景色，提高可讀性 */
+        }
+
+        tbody tr:hover {
+            background-color: #f5f5f5; /* 滑鼠懸停效果 */
+        }
+
+        .txtPart{
+            border-radius: 0.15rem;
+            padding: 0 5px;
+            border: 1px solid #c2c2c2;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        /* 固定表頭 */
+        thead th {
+            position: sticky; /* 表頭固定 */
+            top: 0; /* 固定在頂部 */
+            z-index: 1; /* 確保表頭位於內容上方 */
+        }
+
+    </style>
+}
+
+<div class="wrapper backcolor">
+    @{
+        ViewBag.Title = "Invalid";
+    }
+    <h2>@ViewBag.Message</h2>
+
+    <!-- Content Wrapper. Contains page content -->
+    <!-- Content Header (Page header) -->
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <h2 class="title">
+                工單細節
+            </h2>
+            <!-- SELECT2 EXAMPLE -->
+            <div class="card card-default col-md-12">
+
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="item-name">單號</label><input id="FromDetails_FormId" class="form-control txt-box" disabled value="@Model.FormDetails.FormId">
+                            </div>
+                            <br />
+                            <br />
+                            <!-- /.form-group -->
+                            <div class="form-group">
+                                <label class="item-name">建立日期</label><input class="form-control txt-box" disabled value="@Model.FormDetails.Date">
+                            </div>
+                            <div class="form-group" style="display:flex">
+                                <label class="item-name">需求部門</label><input class="form-control txt-box" disabled value="@Model.FormDetails.DepartmentName">
+                            </div>
+
+                            <div class="form-group" style="display:flex">
+                                <label class="item-name">希望完成日期</label>
+                                <div class="input-group date">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <i class="far fa-calendar-alt"></i>
+                                        </span>
+                                    </div>
+                                    <input disabled type="text" class="form-control float-right" id="reservation" value="@Model.FormDetails.ExpectedFinishedDay">
+                                </div>
+                            </div>
+
+                            <!-- /.form-group -->
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-md-6">
+
+                            <div style="display:flex">
+                                <div style="width:27%"></div>
+                                <div class="form-group">
+                                    @if (Model.FormDetails.IsUser && Model.FormDetails.IsApply&&Model.FormDetails.FormIsActive)
+                                    {
+                                        <a class="button btn btn-warning btn-link" asp-area="" asp-controller="ModifyForm" asp-action="Index" asp-route-id="@Model.FormDetails.FormId"><i class="fa-solid fa-pen-to-square"></i> 修改</a>
+                                    }
+                                    else
+                                    {
+                                        <button class="button btn btn-warning" type="button" disabled><i class="fa-solid fa-pen-to-square"></i>  修改</button>
+                                    }
+
+                                </div>
+                                <div style="width:15%"></div>
+                              
+                                    <input type="hidden" name="id" value="@Model.FormDetails.Id" />
+                                    <div class="form-group">
+                                    @if (Model.FormDetails.IsUser && Model.FormDetails.IsApply && Model.FormDetails.FormIsActive)
+                                        {
+                                            <button id="btnInvalid" class="button btn btn-danger" type="button"><i class="fa-solid fa-trash"></i> 作廢</button>
+                                        }
+                                        else
+                                        {
+                                            <button id="btnInvalid" class="button btn btn-danger" type="button" disabled><i class="fa-solid fa-trash"></i> 作廢</button>
+                                        }
+
+                                    </div>
+                              
+                            </div>
+
+                            <br />
+                            <br />
+                            <div>
+                                <div class="form-group" style="display:flex">
+                                    <label class="item-name">需求類別</label><input class="form-control txt-box" disabled value="@Model.FormDetails.CategoryDescription">
+
+                                </div>
+                                <div class="form-group">
+                                    <label class="item-name">需求員工</label><input class="form-control txt-box" disabled value="@Model.FormDetails.EmployeeName">
+                                </div>
+                                @*          <div class="form-group">
+                                <label class="item-name">所屬專案</label><input class="form-control txt-box" disabled value="@Model.ProjectName">
+                                </div> *@
+                            </div>
+                        </div>
+
+                        <!-- /.col -->
+                        @*                     </div>
+                        <div>
+                        <div class="form-group">
+                        <label class="item-name">處理狀態</label>
+                        </div>
+                        <div style="width:100%; height:150px" class="backcolor">
+                        </div>
+                        </div>
+                        <br />
+                        <br /> *@
+
+                        <label>流程進度</label>
+                        <br>
+                        <div class="formBackground btnArea">
+
+                            <div>
+                                @foreach (var activity in Model.FormDetailsProcesseFlows)
+                                {
+                                    if (activity.IsHightLight)
+                                    {
+
+                                        <button class="btn btn-sm btn-danger btns">@activity.UserActivityIdDescription</button>
+                                    }
+                                    else
+                                    {
+
+                                        <button class="btn btn-sm btn-primary btns">@activity.UserActivityIdDescription</button>
+                                    }
+
+                                }
+
+
+                            </div>
+                        </div><br /><br />
+
+                        <div class="table-container">
+                            <!--  工單處理紀錄  -->
+                            <label>處理紀錄</label>
+                            <table class="table table-hover table-bordered ">
+                                <thead>
+                                    <tr>
+                                        <th>時間</th>
+                                        <th>處理狀態</th>
+                                        <th>處理人員</th>
+                                        <th>出示意見</th>
+                                        <th>審核結果</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.FormDetails.FormDetailsFormProcesses)
+                                    {
+                                        <tr>
+                                            <td>@item.Date</td>
+                                            <td>@item.UserActivityIdDescription</td>
+                                            <td>@item.EmployeeName</td>
+                                            <td>@item.Remark</td>
+                                            <td>@item.ResultDescription</td>
+                                        </tr>
+                                    }
+
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- /.row -->
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="item-name">需求內容</label>
+                                </div>
+                                <div class="txtPart">
+                                    <div class="form-control''=" floatingTextarea">@Html.Raw(Model.FormDetails.Content)</div>
+                                </div>
+                            </div>
+                            <!-- /.col -->
+                            <!-- /.col -->
+                        </div>
+                        <div class="row">
+                            <!-- /.form-group -->
+                            <div class="form-group">
+                                <label style="margin-right:5%">聯繫電話</label><input class=" form-control" style="width:25%" disabled value="@Model.FormDetails.Tel">
+                            </div>
+
+                            <!-- /.form-group -->
+                            <div class="col-12 col-sm-6">
+
+                                <!-- /.form-group -->
+                            </div>
+                            <!-- /.col -->
+                            <div class="col-12 col-sm-7" style="display:flex">
+
+
+                                <div class="form-group">
+                                    <button id="btnDownload" class="button btn btn-primary" type="button"><i class="fa-solid fa-file-arrow-down"></i>  附件下載</button>
+                                </div>
+                                <!-- /.form-group -->
+                            </div>
+
+
+                            <!-- /.col -->
+                        </div>
+                        <!-- /.row -->
+                    </div>
+
+                </div>
+                <!-- /.row -->
+            </div>
+            <!-- /.container-fluid -->
+        </div>
+    </section>
+    <!-- /.content -->
+    <!-- /.content-wrapper -->
+
+</div>
+
+@section Scripts
+{
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <script>
+
+      
+        $("#btnInvalid").click(function () {
+
+            let userConfirmed = confirm("是否作廢?");
+           
+            if (!userConfirmed) return;
+
+            let id = $("#FromDetails_FormId").val();
+
+            let formData = new FormData();
+            formData.append("id", id);
+
+            $.ajax({
+                'url': `/FormDetails/InValid`,
+                'type': 'POST',
+                'contentType': false, //required
+                'processData': false, // required
+                'mimeType': 'multipart/form-data',
+                'data': formData,
+                'dataType': 'json'
+            }).done(function (response) {
+                console.log(response);
+                if (response) {
+                           alert(response.message);
+                    window.location.href = "/QueryForms/Index/";
+                } else {
+                    alert("作廢成功，但未收到預期回應!");
+                }
+            }).fail(function (response) {
+                alert("作廢失敗，請重新嘗試或洽管理員!")
+            })
+
+        });
+        
+
+        // $("#btnDownload").click(function () {
+
+        //     let userConfirmed = confirm("是否下載?");
+        //     if (!userConfirmed) return;
+
+
+        //     let id = $("#FromDetails_FormId").val();
+
+        //     let formData = new FormData();
+        //     formData.append("id", id);
+
+        //     fetch('/FormDetails/Download',
+        //         {
+        //             method: 'POST',
+        //             body: formData,
+
+        //         }).then(response => {
+        //             if (response.ok) {
+        //                 alert("下載成功");
+        //             } else {
+        //                 alert("下載失敗");
+        //             }
+        //             return response.blob()
+        //                 } )
+        //         .then( blob => {
+        //             var file = window.URL.createObjectURL(blob);
+        //             window.location.assign(file);
+        //           });
+
+               
+
+        // });
+
+
+        $("#btnDownload").click(function () {
+
+            let userConfirmed = confirm("是否下載?");
+            if (!userConfirmed) return;
+
+            let id = $("#FromDetails_FormId").val();
+
+            let formData = new FormData();
+            formData.append("id", id);
+
+            fetch('/FormDetails/Download', {
+                method: 'POST',
+                body: formData,
+            }).then(response => {
+                // 檢查是否成功
+                if (!response.ok) {
+                    throw new Error('下載失敗');
+                }
+
+                // 嘗試獲取回應的內容類型
+                let contentType = response.headers.get("content-type");
+
+                // 如果伺服器返回的是文本
+                if (contentType && contentType.includes("text")) {
+                    return response.text().then(text => {
+                        alert(text);  // 例如：顯示 "無檔案可下載"
+                    });
+                }
+
+                // 否則繼續處理檔案下載
+                return response.blob().then(blob => {
+                    let file = window.URL.createObjectURL(blob);
+                    let link = document.createElement('a');
+                    link.href = file;
+                    link.download = 'download.zip';  // 可以更改為你的文件名
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    alert("下載成功");
+                });
+            }).catch(error => {
+                alert(error.message);
+            });
+        });
+    </script>
+}

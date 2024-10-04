@@ -1,0 +1,503 @@
+﻿@section Style {
+	<style>
+
+		.content-wrapper {
+			background-image: linear-gradient(120deg, #ffffff 0%, #0079ff2e 100%);
+		}
+
+		.outside {
+			padding: 20px;
+		}
+
+		.title {
+			color: rgba(0, 81, 255, 0.884);
+			font-weight: bold;
+		}
+
+		.inside {
+			background-color: white;
+			padding: 5px;
+			margin-top: 30px;
+			padding: 20px;
+			border-radius: 0.25rem;
+			box-shadow: 0 0 1px rgba(0, 0, 0, .125), 0 1px 3px rgba(0, 0, 0, .2);
+		}
+
+		table {
+			width: 100%;
+			border-collapse: collapse;
+		}
+
+		th {
+			background-color: white;
+			color: rgba(0, 81, 255, 0.884);
+		}
+
+		th, td {
+			border: 1px solid #ddd;
+			padding: 8px;
+			text-align: center;
+		}
+
+		td {
+			background-color: white;
+		}
+
+		.booked {
+			background-color: #42a8fa;
+			color: white;
+			font-weight: bold;
+		}
+
+			.booked:hover {
+				border: 3px solid red;
+			}
+
+		.pContent {
+			font-size: 1.5vw;
+			border-bottom: solid 0.2vw rgba(0, 81, 255, 0.884);
+		}
+
+		img {
+			width: 50%;
+			height: 80%;
+		}
+		label {
+			background-color: #42a8fa;
+		}
+
+		[v-cloak] {
+			display: none;
+		}
+	</style>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+}
+<div class="outside">
+	<h2 class="title">目前會議室</h2>
+	<div class="inside">
+	<div id="app" class="row" v-cloak>
+		@* 時間表的部分 *@
+		<div class="col-8">
+			<table class="info" style="width:100%;">
+				<thead>
+					<tr>
+						<th>Time</th>
+						<th v-for="(room, index) in rooms" :key=" index">{{ room }}</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr v-for="time in times" :key="time">
+						<td>{{ time }}</td>
+							<td v-for="room in rooms" :key="room" :class="{ booked: isBooked(room, time) }" @@click="handclick(room, time)">
+								<template v-if="isBooked(room, time)">
+									{{ isBooked(room, time).meetingHost }}
+								</template>
+							</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+
+		<div style="display:inline-block" class="col-4">
+
+			<div ref="calendarContainer"></div>
+
+
+			<div class="card-body" style="background-color:white;margin-top:2vw; border-color:black">
+				<p style="font-size:large">選取日期: {{ selectedDate }}</p>
+				<div style="display:flex">
+					<h4>會議資訊 </h4>
+					<div v-if="meetingHostDistinguish" style="display:inline-flex;margin-left:1vw">
+						<img src="@Url.Content("~/images/userdata/edit.png")"
+							 class="operation-icon"
+							 @@click="editMeeting(bookedDetails.meetingId)" />
+						<img src="@Url.Content("~/images/userdata/delete.png")"
+							 class="operation-icon"
+							 @@click="deleteMeeting(bookedDetails.meetingId)" />
+					</div>
+				</div>
+
+				<p class="pContent"><i class="fa-solid fa-arrow-right"></i> 會議室:{{bookedDetails.meetingRoomId}}</p>
+				<p class="pContent"><i class="fa-regular fa-user "></i> 主持人:{{bookedDetails.meetingHost}}</p>
+				<p class="pContent"><i class="fa-regular fa-clock "></i> 預約時間:{{formatTime(bookedDetails.startTime)}}-{{formatTime(bookedDetails.endTime)}} </p>
+				<p class="pContent"><i class="fa-regular fa-comment "></i> 備註:{{bookedDetails.note}}</p>
+			</div>
+		</div>
+
+@* 
+		編輯視窗 *@
+
+		<div class="modal fade"
+			 id="modalId"
+			 tabindex="-1"
+			 data-bs-backdrop="static"
+			 data-bs-keyboard="false"
+			 role="dialog"
+			 aria-labelledby="modalTitleId"
+			 aria-hidden="true">
+			<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md"
+				 role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="modalTitleId">
+							修改預約資料
+						</h5>
+						<button type="button"
+								class="btn-close"
+								aria-label="Close"
+								@@click="unshowModle"></button>
+					</div>
+					
+					<div class="modal-body">
+						<div class="mb-3">
+							<label class="form-control btn-primary">
+								選擇會議室
+							</label>
+							<select v-model="editData.meetingRoom" id="room-select" class="form-control ">
+								<option v-for="room in roomsInfo" :key="room.RoomId" :value="room.RoomId">
+									房間 {{ room.RoomId }}（容量：{{ room.Capacity }}人）
+								</option>
+							</select>
+						</div>
+						<div class="mb-3">
+							<label class="form-control btn-primary">選取日期</label>
+							<input type="date" :min="today" class="form-control bookingDate" style="outline:none;" v-model="editData.date"/>
+						</div>
+						<div class="mb-3">
+							<label class="form-control btn-primary">開始時間</label>
+							<select v-model="editData.startTime" id="room-select" class="form-control">
+								<option v-for="time in times" :key="time">
+									{{ time }}
+								</option>
+							</select>
+						</div>
+						<div class="mb-3">
+							<label class="form-control btn-primary">結束時間</label>
+							<select v-model="editData.endTime"  class="form-control">
+								<option v-for="time in times" :key="time">
+									{{ time }}
+								</option>
+							</select>
+
+						</div>
+						<div class="mb-3">
+							<label class="form-control btn-primary">備註</label>
+							<textarea v-model="editData.note" class="form-control">
+								{{editData.note}}
+							</textarea>
+
+						</div>
+						<div class="mb-3" >
+							<label class="form-control btn-primary">新增成員</label>
+							<div style="display:flex">
+								<select class="form-control" v-model="addMemberUser">
+									<option v-for="user in formattedEmployees"
+											:key="user.UserId"
+											:value="user">
+										{{ user.displayName }}
+									</option>
+								</select>
+								<button class="btn btn-success" style="display:inline-flex;margin-left:auto;height: 20%;width: 14%;" @@click="addMember">
+									加入
+								</button>
+							</div>
+						</div>
+						<div class="mb-3">
+							<label class="form-control btn-primary">現有成員</label>
+							<div style="display:flex" v-for="member in editData.meetingMembers" :key="member.userId" :value="member.userName">
+								<p>
+									{{member.departmentName}} ( 員工編號:{{member.userId}} ) {{member.userName}}
+
+								</p>
+								<button class="btn btn-danger" style="display:inline-flex;margin-left:auto" @@click="deleteMember(member.userId)">移除</button>
+							</div>
+
+
+						</div>
+
+					</div>
+					<div class="modal-footer">
+						<button type="button"
+								class="btn btn-warning"
+								@@click="unshowModle">
+							取消
+						</button>
+						<button type="button" class="btn btn-primary" @@click="editSubmit(bookedDetails.meetingId)">送出</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+	</div>
+	</div>
+</div>
+
+
+@section Scripts {
+	<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.7/axios.min.js" integrity="sha512-DdX/YwF5e41Ok+AI81HI8f5/5UsoxCVT9GKYZRIzpLxb8Twz4ZwPPX+jQMwMhNQ9b5+zDEefc+dcvQoPWGNZ3g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script>
+		new Vue({
+			el: '#app',
+			data: {
+				today:'',
+				baseAddress: "https://localhost:7129/CurrentMeetingRoom",
+				selectedDate: '',
+				rooms: [],
+				roomsInfo:[],
+				times: ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00'],
+				bookings: [],
+				bookedSlots: {},
+				bookedDetails: {},
+				meetingHostDistinguish: false,
+				nowUserId: '@Html.Raw(ViewBag.nowUserId)',
+				employees: {},
+				allEmployees: [],
+				addMemberUser:'',
+				editData:{
+					meetingId:'',
+					date:'',
+					meetingRoom:'',
+					note:'',
+					startTime:'',
+					endTime:'',
+					meetingMembers:[],
+				},
+			},
+			created() {
+				//利用js取得時間
+				const date = new Date();
+				const year = date.getFullYear();
+				const month = String(date.getMonth() + 1).padStart(2, '0');
+				const day = String(date.getDate()).padStart(2, '0');
+				this.today = `${year}-${month}-${day}`; 
+			},
+			computed: {
+				formattedEmployees() {
+					let allEmployees = [];
+					// 遍歷每個部門把值撈出來
+					for (let departmentName in this.employees) {
+						// 遍歷每個部門中的每個員工
+						this.employees[departmentName].forEach(employee => {
+							allEmployees.push({
+								...employee,
+								displayName: `${departmentName} - ${employee.UserId} - ${employee.UserName}`
+							});
+						});
+					}
+					return allEmployees;
+				}
+			},
+			methods: {
+				addMember() {
+					if (this.addMemberUser && this.addMemberUser.UserId) {
+						//尋找是不是在原本的資料列內
+						const isAlreadyAdded = this.editData.meetingMembers.some(
+							member => member.userId === this.addMemberUser.UserId
+						);
+						if (!isAlreadyAdded) {
+							// 如果不存在，則將選中的員工加入成員列表
+							this.editData.meetingMembers.push({
+								departmentId: this.addMemberUser.DepartmentId,
+								userId: this.addMemberUser.UserId,
+								userName: this.addMemberUser.UserName,
+								departmentName: this.addMemberUser.displayName.split(" - ")[0],
+							});
+						} else {
+							alert('該成員已經在列表中');
+						}
+					    }
+					},
+				deleteMember(e) {
+					//產生新的陣列是排除要移除的成員
+					let _this = this;
+					_this.editData.meetingMembers = _this.editData.meetingMembers.filter(n => n.userId !== e);
+
+				},
+				showModle() {
+					$("#modalId").modal('show');
+				},
+				unshowModle() {
+					$("#modalId").modal('hide');
+				},
+				refreshTable() {
+					let _this = this;
+					axios.get(`${_this.baseAddress}/getMeetingBook/${_this.selectedDate}`)
+						.then(response => {
+							if (response.data) {
+							    //把收到回應的資料放入
+								_this.bookings = response.data.data;
+								//重新計算預約筆數
+								_this.calculateBookedSlots();
+								_this.meetingHostDistinguish = false;
+							} else {
+								console.error('Unexpected data format:', response.data);
+
+							}
+						})
+						.catch(error => {
+							console.error('Error fetching bookings:', error);
+						});
+					
+				},
+				formatTime(hour) {
+					if (!(hour === undefined)) {
+						const formattedHour = String(hour).padStart(2, '0');
+						return `${formattedHour}:00`;
+					}
+					return "00:00"
+				},
+				isBooked(room, time) {
+					const hour = parseInt(time.split(':')[0], 10);
+					if (this.bookedSlots[room]) {
+						const booking = this.bookings.find(booking => booking.meetingRoomId === room && booking.startTime <= hour && booking.endTime > hour);
+						return booking ? booking : false;
+					}
+					return false;
+				},
+				calculateBookedSlots() {
+
+					if (!Array.isArray(this.bookings)) {
+						//直接讓bookedSlots是空的
+						this.bookedSlots = {};
+						return;
+					}
+					this.bookedSlots = {};
+					this.bookings.forEach(booking => {
+						const room = booking.meetingRoomId;
+						if (!this.bookedSlots[room]) {
+							this.bookedSlots[room] = [];
+						}
+						for (let i = booking.startTime; i < booking.endTime; i++) {
+							this.bookedSlots[room].push(i);
+						}
+					});
+				},
+				handclick(room, time) {
+					//當按到不同的會議室顯示對應的資料
+					//先清空內容
+					this.bookedDetails = {};
+					const clickTime = parseInt(time.split(':')[0], 10);
+					const findBooking = this.bookings.filter(booking => {
+						return booking.meetingRoomId === room &&
+							clickTime >= booking.startTime &&
+							clickTime <= booking.endTime;
+					});
+					if (findBooking) {
+						this.bookedDetails = findBooking[0];
+						//判斷當前登入者 和預約的人是不是同一個
+						if (this.nowUserId === this.bookedDetails.meetingHostUserId) {
+							this.meetingHostDistinguish = true;
+						}
+						else {
+							this.meetingHostDistinguish = false;
+						}
+					}
+					else {
+						console.log("notfind")
+					}
+
+				},
+				editMeeting(e) {
+					let _this = this;
+
+					//去後端要回當筆資料
+					axios.get(`${_this.baseAddress}/editMeetingBook/${e}`)
+						.then(response => {
+							if (response.data.success) {
+								
+								_this.editData = response.data.data;
+								//重新渲染
+								// 資料清空
+
+							} else {
+								alert("沒有此筆預約")
+							}
+						})
+						.catch(error => {
+							console.error('Error fetching bookings:', error);
+						});
+					//叫出修改頁面
+					_this.showModle();
+
+				},
+				deleteMeeting(e) {
+					//抓到單號
+					let _this = this;
+					axios.get(`${_this.baseAddress}/deleteMeetingBook/${e}`)
+						.then(response => {
+							if (response.data.success) {
+								alert(response.data.data);
+								//重新渲染
+								// 資料清空
+								_this.bookedDetails = {};
+								//要讓格子重新選染
+								_this.refreshTable();
+
+							} else {
+								alert("沒有此筆預約")
+							}
+						})
+						.catch(error => {
+							console.error('Error fetching bookings:', error);
+						});
+				},
+				editSubmit() {
+					//整包資料送出
+					//先確認開始時間不可以晚於結束時間
+					//結束時間不可以早於開始時間
+					let _this = this;
+					if (_this.editData.startTime >= _this.editData.endTime )
+					{
+						alert("開始時間不可以晚於結束時間")
+						return;
+					}
+					if (_this.editData.meetingMembers.length === 0) {
+						alert("會議參與人不可為空")
+						return;
+					}
+					axios.post(`${_this.baseAddress}/editMeetingBook`, JSON.stringify(_this.editData), {
+						headers: {
+							'Content-Type': 'application/json'
+						}
+					})
+						.then(response => {
+							alert(JSON.stringify(response.data.message));
+							_this.refreshTable();
+							//清空memo
+							_this.unshowModle();
+							_this.bookedDetails = {};
+
+						})
+						.catch((error) => console.log(error));
+
+
+				}
+			},
+			mounted() {
+				flatpickr(this.$refs.calendarContainer, {
+					inline: true,
+					dateFormat: "Y-m-d",
+					minDate: "today",
+					onChange: (selectedDates, dateStr) => {
+						let _this = this;
+						_this.selectedDate = dateStr;
+						_this.bookedDetails = {};
+						_this.bookedSlots = {};
+						_this.refreshTable();
+					}
+				});
+
+				let _this = this;
+				_this.rooms = JSON.parse('@Html.Raw(ViewBag.allRooms)');
+				_this.roomsInfo = JSON.parse('@Html.Raw(ViewBag.roomsInfo)');
+				_this.employees = JSON.parse('@Html.Raw(ViewBag.employees)');
+				_this.allEmployees = Object.values(_this.employees).flat();
+			}
+		});
+	</script>
+}

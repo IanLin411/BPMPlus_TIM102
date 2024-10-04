@@ -1,0 +1,549 @@
+﻿@using System.Text.Json
+@using static BPMPlus.Controllers.BookingMeetingRoomController
+@model MeetingRooms
+@section Style
+{
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+    <style>
+
+        .content-wrapper{
+            background-image: linear-gradient(120deg, #ffffff 0%, #0079ff2e 100%);
+        }
+
+        .content-wrapper > .content {
+        padding: inherit;
+        }
+
+        .outside {
+            padding: 0 36px;
+        }
+
+        .meeting-container {
+            padding-top: 20px;
+        }
+
+        .title {
+            color: rgba(0, 81, 255, 0.884);
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+        .inside {
+            background-color: white;
+            padding: 20px;
+            border-radius: 0.25rem;
+            box-shadow: 0 0 1px rgba(0, 0, 0, .125), 0 1px 3px rgba(0, 0, 0, .2);
+        }
+
+        table {
+            width: 80%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background-color: white;
+            color: rgba(0, 81, 255, 0.884);
+            padding: 8px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        td {
+            background-color: white;
+            color: white;
+            font-weight: bold;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        label {
+            margin: auto;
+            display: inline;
+            width: 200px;
+            margin-right: 20PX;
+            background-color: #458bfc;
+            text-align: center;
+            color: white;
+            text-decoration: double;
+            border-radius: 5%;
+        }
+
+        .btn-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .submit-btn {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+
+
+        .multiselect-container {
+            width: 380px;
+            position: relative;
+            font-family: Arial, sans-serif;
+        }
+
+        .multiselect-input-container {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .dropdown-arrow {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .multiselect-dropdown {
+            display: none;
+            position: absolute;
+            width: 100%;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            background-color: white;
+            z-index: 1000;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .multiselect-item {
+            padding: 8px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+        }
+
+            .multiselect-item:hover {
+                background-color: #f0f0f0;
+            }
+
+            .multiselect-item.department {
+                font-weight: bold;
+                background-color: #e9e9e9;
+            }
+
+            .multiselect-item.name {
+                padding-left: 20px;
+            }
+
+        .selected-items {
+            margin-top: 10px;
+        }
+
+        .selected-item {
+            display: inline-block;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            padding: 4px 8px;
+            background-color: #e0e0e0;
+            border-radius: 16px;
+            font-size: 14px;
+        }
+
+        .remove-item {
+            cursor: pointer;
+            margin-left: 5px;
+            font-weight: bold;
+        }
+
+        .search-input {
+            width: calc(100% - 16px);
+            margin: 8px;
+            padding: 4px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+    </style>
+}
+
+<!-- outside -->
+<div class="outside">
+    <div class="meeting-container">
+        <h2 class="title">新增預約</h2>
+        <!-- inside -->
+        <div class="inside row">
+            <div class="col-5">
+                <div class="form-group">
+                    <label for="">預約日期</label>
+                    <input type="date" min="@ViewBag.MinDate" class="form-control bookingDate" style="outline:none;" />
+                </div>
+
+                <div class="form-group">
+                    <label>選擇會議室</label>
+                    <select class="form-control selectRoom" asp-items="ViewBag.MeetingRooms">
+                        <option value="">-- 請選擇會議室 --</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="">可容納人數</label>
+                    <input class="form-control accommodation" Disabled />
+                </div>
+
+                <div class="form-group">
+                    <label for="">開始時間</label>
+                    <select id="startTimeSelect" class="form-control startTimeSelect" style="outline:none;">
+                        <option value="">-- 請選擇開始時間 --</option>
+                        @foreach (var time in ViewBag.TimeSlots)
+                        {
+                            <option>@time.ToString("HH:mm")</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="">結束時間</label>
+                    <select id="endTimeSelect" class="form-control endTimeSelect" style="outline:none;">
+                        <option value="">-- 請選擇結束時間 --</option>
+                        @foreach (var time in ViewBag.TimeSlots)
+                        {
+                            <option>@time.ToString("HH:mm")</option>
+                        }
+
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="">預約人</label>
+                    <input type="text" class="form-control meetingHost" value="@ViewBag.MeetingHost" Disabled />
+                </div>
+
+                <div class="form-group">
+                    <label for="">預約部門</label>
+                    <input type="text" class="form-control" value="@ViewBag.DepartmentName" Disabled />
+                </div>
+
+                <div class="form-group">
+                    <label for="">與會者</label>
+                    <div class="multiselect-container">
+                        <div class="multiselect-input-container">
+                            <input type="text" class="multiselect-input form-control members" placeholder="-- 請加入與會者 --">
+                            <span class="dropdown-arrow">▼</span>
+                            <div class="multiselect-dropdown">
+                                <input type="text" class="search-input" placeholder="搜尋">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="members" class="selected-items" style="margin-bottom:10px;"></div>
+
+                <div class="form-group">
+                    <label for="">備註</label>
+                    <textarea class="form-control note"></textarea>
+                </div>
+
+                <div class="btn-center">
+                    <button id="submitButton" class="btn btn-success">送出</button>
+                </div>
+            </div>
+            <div class="col-1"></div>
+            <div class="col-6">
+                <table id="scheduleTable" class="table-bordered">
+                    <thead>
+                        <tr>
+                            <th style="color: rgba(0, 81, 255, 0.884);">Time</th>
+                            @foreach (var room in ViewBag.Rooms)
+                            {
+                                <th style="color: rgba(0, 81, 255, 0.884);">@room</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var timeSlot in ViewBag.TimeSlots)
+                        {
+                            <tr>
+                                <td style="vertical-align: top; height:50px;">@timeSlot.ToString("HH:mm")</td>
+                                @foreach (var room in ViewBag.Rooms)
+                                {
+                                    <td data-room="@room" data-time="@timeSlot.ToString("HH:mm")"></td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts
+{
+    <script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+
+            //加入與會者選擇器
+            var colleagues = @Html.Raw(ViewBag.Employees);
+            let selectedItems = [];
+            let isDropdownOpen = false;
+
+            function renderDropdown() {
+                const $dropdown = $('.multiselect-dropdown');
+                $dropdown.find('.multiselect-item').remove();
+                $.each(colleagues, function (department, employees) {
+                    $dropdown.append($('<div>').addClass('multiselect-item department').text(department));
+                    $.each(employees, function (index, employee) {
+                        // 假設 employee 是一個包含 name 和 id 的對象
+                        if (!selectedItems.some(item => item.UserId === employee.UserId)) {
+                            $('<div>')
+                                .addClass('multiselect-item name')
+                                .html(`${employee.UserId} <span class="employee-UserId">${employee.UserName}</span>`)
+                                .on('click', function (e) {
+                                    e.stopPropagation();
+                                    selectItem(employee);
+                                })
+                                .appendTo($dropdown);
+                        }
+                    });
+                });
+            }
+
+            function selectItem(employee) {
+                selectedItems.push(employee);
+                renderSelectedItems();
+                $('.search-input').val('');
+                renderDropdown();
+            }
+
+            function removeItem(employee) {
+                selectedItems = selectedItems.filter(item => item.UserId !== employee.UserId);
+                renderSelectedItems();
+                renderDropdown();
+            }
+
+            function renderSelectedItems() {
+                const $selectedItems = $('.selected-items');
+                $selectedItems.empty();
+                selectedItems.forEach(employee => {
+                    $('<div>')
+                        .addClass('selected-item')
+                        .html(`${employee.UserId} ${employee.UserName} <span class="remove-item">✕</span>`)
+                        .find('.remove-item')
+                        .on('click', function (e) {
+                            e.stopPropagation();
+                            removeItem(employee);
+                        })
+                        .end()
+                        .appendTo($selectedItems);
+                });
+            }
+
+            function toggleDropdown() {
+                isDropdownOpen = !isDropdownOpen;
+                $('.multiselect-dropdown').toggle(isDropdownOpen);
+                $('.dropdown-arrow').text(isDropdownOpen ? '▲' : '▼');
+            }
+
+            $('.multiselect-input-container').on('click', function (e) {
+                e.stopPropagation();
+                toggleDropdown();
+                if (isDropdownOpen) {
+                    renderDropdown();
+                    $('.search-input').focus();
+                }
+            });
+
+            $('.search-input').on('input', function () {
+                const searchTerm = $(this).val().toLowerCase();
+                $('.multiselect-item').each(function () {
+                    const $item = $(this);
+                    if ($item.hasClass('department')) {
+                        $item.show();
+                    } else {
+                        const itemText = $item.text().toLowerCase();
+                        if (itemText.includes(searchTerm)) {
+                            $item.show();
+                            $item.prevAll('.department:first').show();
+                        } else {
+                            $item.hide();
+                        }
+                    }
+                });
+            });
+
+            $(document).on('click', function () {
+                if (isDropdownOpen) {
+                    toggleDropdown();
+                }
+            });
+
+            renderDropdown();
+            /* 與會者end--------------------------------------------------------------------------------------------------------------------------- */
+
+
+            //選擇會議室取得可容納人數
+            $(".selectRoom").change(function () {
+                let meetingRoomId = this.value;
+                $.ajax({
+                    url: '@Url.Action("GetMeetingRoomInfo", "BookingMeetingRoom")',
+                    type: 'GET',
+                    data: { id: meetingRoomId },
+                    success: function (response) {
+                        var accommdation = response.data;
+                        $(".accommodation").val(accommdation);
+                    }
+                });
+            });
+
+            let bookedTimes = [];
+            //取得已預約時間
+            $(".bookingDate").change(function () {
+                let bookingDate = $(this).val();
+                $('#tableNote').hide;
+                $.ajax({
+                    url: '@Url.Action("CheckMeetingRooms", "BookingMeetingRoom")',
+                    type: 'GET',
+                    data: {
+                        BookingDate: bookingDate
+                    },
+                    success: function (response) {
+                        if (response != null) { 
+                            let bookedTimes = response.data;
+                            updateScheduleTable(bookedTimes);
+                        }
+                    }
+                });
+            });
+
+            //表格填色
+            function updateScheduleTable(bookedTimes) {
+                //先清除所有顏色
+                $("#scheduleTable td").css("background-color", "");
+
+                bookedTimes.forEach(function (booking) {
+                    let startTime = booking.startTime;
+                    let endTime = booking.endTime;
+                    let roomId = booking.roomId;
+                    let userName = booking.userName;
+
+                    $("#scheduleTable td").each(function () {
+                        let cellTime = $(this).data("time");
+                        let cellRoom = $(this).data("room");
+
+                        if (cellRoom == roomId && cellTime >= startTime && cellTime < endTime) {
+                            $(this).css("background-color", "#42a8fa").css("color", "white").text(userName);
+                        }
+                    });
+                });
+
+            }
+
+
+            //結束時間不可早於開始時間
+            $(".endTimeSelect").change(function () {
+                let startTime = $(".startTimeSelect").val();
+                let endTime = $(".endTimeSelect").val();
+                if (endTime <= startTime)
+                {
+                    alert("結束時間不可早於(或等於)開始時間!");
+                    $(this).prop('selectedIndex', 0);
+                }
+            });
+
+            $(".startTimeSelect").change(function () {
+                startTime = $(this).val();
+            });
+
+
+
+
+
+            // submit
+            $("#submitButton").click(function () {
+                $(this).disabled = true;
+
+                let room = $(".selectRoom").val();
+
+                let bookingDate = $(".bookingDate").val();
+                let startTime = $(".startTimeSelect").val();
+                let endTime = $(".endTimeSelect").val();
+
+                // let saveStartDate = bookingDate + " " + startTime;
+                // let saveEndDate = bookingDate + " " + endTime;
+
+                let note = $(".note").val();
+                let meetingHost = $(".meetingHost").val();
+                let members = [];
+
+                $('#members .selected-item').each(function () {
+                    // 取得中間的文字部分 (排除 <span>)
+                    var text = $(this).contents().filter(function () {
+                        return this.nodeType === 3; // 只選擇內文
+                    }).text().trim();
+
+                    // 取得UserId, 加入members
+                    var firstFourChars = text.substring(0, 4);
+                    members.push(firstFourChars);
+                });
+
+                //檢查內容
+                if (room == "") {
+                    alert('會議室不可為空!');
+                    retuen;
+                }
+                if (bookingDate == "") {
+                    alert('預約日期不可為空!');
+                    return;
+                }
+                if (startTime == "") {
+                    alert('開始時間不可為空!');
+                    return;
+                }
+                if (endTime == "") {
+                    alert('結束時間不可為空!');
+                    return;
+                }
+                if (members == "") {
+                    alert('與會者不可為空!');
+                    return;
+                }
+                $.ajax({
+                    url: '@Url.Action("SubmitBooking", "BookingMeetingRoom")',
+                    type: 'post',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        Room: room,
+                        Date: bookingDate,
+                        StartTime: startTime,
+                        EndTime: endTime,
+                        Note: note,
+                        MeetingHost: meetingHost,
+                        Members: members
+                    }),
+                    success: function (response) {
+                        if (response.success == true) {
+                            alert(response.data);
+                            window.location.href = "CurrentMeetingRoom/Index/";
+                        } else {
+                            $(this).disabled = false;
+                            alert(response.message);
+                        }
+
+                    },
+                });
+
+            })
+        });
+    </script>
+}

@@ -1,0 +1,123 @@
+﻿@model BPMPlus.ViewModels.Project.ProjectDetailsViewModel
+
+@{
+    ViewData["Title"] = "_GetUser";
+}
+@section Style {
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="~/AdminLTE/plugins/fontawesome-free/css/all.min.css">
+    <!-- daterange picker -->
+    <link rel="stylesheet" href="~/AdminLTE/plugins/daterangepicker/daterangepicker.css">
+    <!-- iCheck for checkboxes and radio inputs -->
+    <link rel="stylesheet" href="~/AdminLTE/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <!-- Bootstrap Color Picker -->
+    <link rel="stylesheet" href="~/AdminLTE/plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css">
+    <!-- Tempusdominus Bootstrap 4 -->
+    <link rel="stylesheet" href="~/AdminLTE/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+    <!-- Select2 -->
+    <link rel="stylesheet" href="~/AdminLTE/plugins/select2/css/select2.min.css">
+    <link rel="stylesheet" href="~/AdminLTE/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+    <!-- Bootstrap4 Duallistbox -->
+    <link rel="stylesheet" href="~/AdminLTE/plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css">
+    <!-- BS Stepper -->
+    <link rel="stylesheet" href="~/AdminLTE/plugins/bs-stepper/css/bs-stepper.min.css">
+    <!-- dropzonejs -->
+    <link rel="stylesheet" href="~/AdminLTE/plugins/dropzone/min/dropzone.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="~/AdminLTE/dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="~/font-awesome/css/all.css" />
+    
+}
+
+<div class="card">
+    <div class="card-header">
+        <div class="card-body table-responsive p-0">
+            <table class="table table-hover text-nowrap">
+                <thead>
+                    <tr>
+                        <th>
+                            身分別
+                        </th>
+                        <th>
+                            人員姓名
+                        </th>
+                        <th>
+                            員工編號
+                        </th>
+                        <th>
+                            部門
+                        </th>
+                        <th>
+                            職稱
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="users-tr">
+                    @foreach (var item in Model.ProjectUsersViewModels)
+                    {
+                        <tr id ="user-tr" style="padding-top: 5px">
+                            <td>
+                                @Html.DisplayFor(modelItem => item.IsPm)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.UserId)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.UserName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Department)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Grade)
+                            </td>
+                            
+                            <td>
+                                @if (Model.AllowModify == "true" && ViewBag.ModMode == true && item.IsPm == "組員")
+                                {
+                                    <button asp-action="Delete" class="button btn btn-danger delete-user-btn" style="margin-top: -4px;margin-bottom: -4px" asp-route-id="@item.UserId"><i class="fa-solid fa-square-minus"></i> 移除</button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                    @if(ViewBag.ModMode == true)
+                    {
+                        <tr id="new-user-row">
+                            <td>組員</td>
+                            <td>
+                                <input type="text" id="userIdInput" class="form-control" style="text-align: center" placeholder="-- 員工編號 --" list="userIdList" />
+                                <datalist id="userIdList" autocomplete="off">
+                                    <!-- 選項會在 document.ready 中填充 -->
+                                </datalist>
+                            </td>
+                            <td>
+                                <input type="text" id="userNameInput" class="form-control" style="text-align: center" placeholder="-- 員工姓名 --" list="userNameList" />
+                                <datalist id="userNameList" autocomplete="off">
+                                    <option value="">-- 選擇姓名 --</option>
+                                    <!-- 選項會在 document.ready 中填充 -->
+                                </datalist>
+                            </td>
+                            <td>
+                                <input type="text" id="departmentInput" class="form-control" style="text-align: center" placeholder="-- 部門 --" list="departmentList" disabled/>
+                                <datalist id="departmentList" autocomplete="off">
+                                    <option value="">-- 部門 --</option>
+                                </datalist>
+                            </td>
+                            <td>
+                                <input type="text" id="gradeInput" class="form-control" style="text-align: center" placeholder="-- 職稱 --" list="gradeList" disabled />
+                                <datalist id="gradeList" autocomplete="off">
+                                    <option value="">-- 職稱 --</option>
+                                </datalist>
+                            </td>
+                            <td>
+                                <button id="add-btn" class="btn btn-success"><i class="fa-solid fa-plus"></i> 新增</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

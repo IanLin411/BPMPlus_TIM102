@@ -1,0 +1,264 @@
+﻿﻿
+@model BPMPlus.ViewModels.Project.ProjectDetailsViewModel
+<!-- Google Font: Source Sans Pro -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="~/AdminLTE/plugins/fontawesome-free/css/all.min.css">
+<!-- daterange picker -->
+<link rel="stylesheet" href="~/AdminLTE/plugins/daterangepicker/daterangepicker.css">
+<!-- iCheck for checkboxes and radio inputs -->
+<link rel="stylesheet" href="~/AdminLTE/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+<!-- Bootstrap Color Picker -->
+<link rel="stylesheet" href="~/AdminLTE/plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css">
+<!-- Tempusdominus Bootstrap 4 -->
+<link rel="stylesheet" href="~/AdminLTE/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+<!-- Select2 -->
+<link rel="stylesheet" href="~/AdminLTE/plugins/select2/css/select2.min.css">
+<link rel="stylesheet" href="~/AdminLTE/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+<!-- Bootstrap4 Duallistbox -->
+<link rel="stylesheet" href="~/AdminLTE/plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css">
+<!-- BS Stepper -->
+<link rel="stylesheet" href="~/AdminLTE/plugins/bs-stepper/css/bs-stepper.min.css">
+<!-- dropzonejs -->
+<link rel="stylesheet" href="~/AdminLTE/plugins/dropzone/min/dropzone.min.css">
+<!-- Theme style -->
+<link rel="stylesheet" href="~/AdminLTE/dist/css/adminlte.min.css">
+@section Style {
+        <style>
+                    /* 讓檔案列表出現在上傳 input 的下方 */
+                #fileList {
+                    margin-top: 1%; /* 與上傳 input 保持適當距離 */
+                    padding: 0;
+                    list-style-type: none;
+                }
+                #fileListContainer {
+                    padding: 10px;
+                    margin-top: 10px;
+                    overflow-y: auto;
+                }
+                #fileList li {
+                    margin-bottom: 1%; /* 每個檔案的間距 */
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
+
+                /* 刪除按鈕的樣式 */
+                #fileList button {
+                    background-color: red;
+                    color: white;
+                    height:50%;
+                    border: none;
+                    cursor: pointer;
+                }
+
+        .content-wrapper {
+            background-image: linear-gradient(120deg, #ffffff 0%, #0079ff2e 100%);
+        }
+
+            .outside {
+                height: 100%;
+                padding: 0 20px;
+            }
+
+        .pageTitle, .title {
+            color: rgba(0, 81, 255, 0.884);
+            font-weight: bold;
+        }
+
+            .pageTitle{
+                margin-bottom: 30px;
+            }
+
+        h3.title {
+            text-align:center;
+            background-color: #458bfc;
+            color: white;
+            border-radius: 0.25rem;
+            padding: 10px;
+        }
+
+            .inside {
+                padding: 20px;
+                background-color: white;
+                box-shadow: 0 0 1px rgba(0, 0, 0, .125), 0 1px 3px rgba(0, 0, 0, .2);
+                border-radius: 0.25rem;
+            }
+
+            .list {
+                display: flex;
+                justify-content: space-around;
+                list-style: none;
+            }
+
+            .bar {
+                display: flex;
+                align-items: center;
+                margin-bottom: 10px;
+                padding-left: 10px;
+            }
+
+            #BackToForm {
+                margin-left: auto;
+            }
+
+            #FormCategory {
+                margin-left: auto;
+            }
+
+
+            .inputField {
+                display: flex;
+                height: 40px;
+            }
+
+            .form-label {
+                padding-top: 20px;
+                display: flex;
+                width: 50%;
+                margin: 2%;
+            }
+
+            label {
+                margin: auto;
+                display: inline;
+                width: 150px;
+                margin-right: 20PX;
+                background-color: #458bfc;
+                text-align: center;
+                color: white;
+                text-decoration: double;
+                border-radius: 5%;
+            }
+
+            .form-file {
+                padding-top: 20px;
+                display: flex;
+                width: 50%;
+                margin: 2%;
+            }
+
+            .dropdown-container {
+                position: relative;
+                width:100%;
+            }
+            .form-date {
+                padding-top: 20px;
+                margin-left: 40px;
+                height: 58px;
+                display: flex;
+            }
+
+            .noteContent {
+                background-color: #458bfc;
+                color: white;
+                border-radius: 5%;
+                width: 100px;
+                text-align: center;
+            }
+
+            .txtInput {
+                width: 100%;
+                background-color: white;
+            }
+
+            .submit-btn {
+                display: flex;
+                justify-content: center;
+                margin-top: 20px;
+            }
+            .upload{
+                width:100%;
+            }
+
+        .borderLine {
+            width: 100%;
+            border: 1px solid #ced4da;
+            margin-top: 20px;
+        }
+
+        .note{
+            padding: 2%;
+            width: 100%;
+            box-shadow: 0 0 1px rgba(0, 0, 0, .125), 0 1px 3px rgba(0, 0, 0, .2);
+            border-radius: 0.25rem;
+        }
+
+        </style>
+}
+
+
+
+<!-- outside -->
+<div class="outside">
+    @Html.AntiForgeryToken()
+    <div style="color:red;">
+        @ViewBag.errMsg
+    </div>
+    <h2 class="pageTitle">專案細節</h2>
+
+    <!-- inside -->
+    <div class="inside">
+            <h3 class="title" style="font-weight: 900">專案資料</h3>
+            <div class="mb-3 inputField ">
+                <div class="mb-3 form-label">
+                    <label for="xxx1">專案編號</label>
+                    <input type="xxx1" class="form-control" value="@ViewBag.ProjectId" Disabled>
+                </div>
+                @if (Model.AllowModify == "true")
+                {
+                    <div class="mb-3 form-label" style="display: flex">
+                        <div style="width: 400px">
+                        </div>
+                    <a class="button btn btn-warning btn-link" style="height: 40px; width: 100px" asp-area="" asp-controller="ProjectCRUD" asp-action="ModifyProjectDetails" asp-route-id="@ViewBag.ProjectId"><i class="fa-solid fa-pen-to-square"></i> 修改</a>
+                    </div>
+                    
+                }
+                else
+                {
+                    <div class="mb-3 form-label">
+                        <div style="width: 400px">
+                        </div>
+                    <a class="button btn btn-warning btn-link" style="height: 40px ;min-width:80px;" disabled><i class="fa-solid fa-pen-to-square"></i> 修改</a>
+                    </div>
+                }
+            </div>
+            
+            <div class="mb-3 inputField ">
+                <div class="mb-3 form-label">
+                    <label for="xxx1">截止期限</label>
+                    <input type="xxx1" class="form-control" value="@ViewBag.DeadLine" Disabled>
+                </div>
+                <div class="mb-3 form-label">
+                    <label for="xxx2">專案名稱</label>
+                    <input type="xxx2" class="form-control" value="@ViewBag.ProjectName" Disabled>
+                </div>
+            </div>
+        <div class="noteDescription" style="margin-top:7%; padding:2%; width:100%">
+            <div class="noteContent" style="font-weight:bold">專案概述</div>
+            <textarea disabled style="width: 100%; height: 150px;">@ViewBag.Summary</textarea>
+            </div>
+        <div class="borderLine"></div>
+            <h3 class="title" style="margin-top: 5%;font-weight: 900">專案成員</h3>
+            <div  class="note" style="padding:2%; width:100%">
+                @await Html.PartialAsync("_GetUserPartial", Model)
+            </div>
+
+        <div class="borderLine"></div>
+
+            <h3 class="title" style="margin-top: 3%;font-weight: 900">專案工單</h3>
+            <div  class="note" style="padding:2%; width:100%">
+                @await Html.PartialAsync("_GetFormPartial", Model)
+            </div>
+
+        <div class="borderLine"></div>
+
+            <h3 class="title" style="margin-top: 3%;font-weight: 900">資料圖表</h3>
+            <div  class="note">
+                @await Html.PartialAsync("_GetChartPartial", Model)
+            </div>
+    </div>
+</div>
+@section Scripts {
+
+}

@@ -1,0 +1,281 @@
+﻿@model BPMPlus.ViewModels.CreateProjectsViewModel
+
+@section Style {
+
+    <link rel="stylesheet" href="~/font-awesome/css/all.css" />
+
+    <style>
+
+        .content-wrapper {
+            background-image: linear-gradient(120deg, #ffffff 0%, #0079ff2e 100%);
+        }
+
+        .outside {
+            padding: 20px;
+        }
+
+
+        .title {
+            color: rgba(0, 81, 255, 0.884);
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+        .inside {
+            margin-top: 10px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 0.25rem;
+            box-shadow: 0 0 1px rgba(0, 0, 0, .125), 0 1px 3px rgba(0, 0, 0, .2);
+        }
+
+      
+
+        .form-label {
+            padding-top: 5px;
+            display: flex;
+            width: 50%;
+            margin: 2%;
+        }
+
+        label {
+            margin: auto;
+            display: inline;
+            width: 100px;
+            margin-right: 20PX;
+            background-color: #458bfc;
+            text-align: center;
+            color: white;
+            text-decoration: double;
+            border-radius: 5%;
+        }
+
+        .inputField{
+            display:flex;
+            height:100px;
+        }
+
+        input {
+            width:100px;
+        }
+
+        #btnSubmit{
+            height:40px;
+        }
+
+        .form-label{
+            width:45%;
+            align-items: center;
+        }
+
+        #btnSubmit {
+            font-weight:1000;
+            width:150px;
+        }
+
+        .error-border {
+            border: 2px solid red;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .inputDeadline{
+            margin-top:10px;
+        }
+
+        .btnArea{
+            display:flex;
+            justify-content: center;
+           
+        }
+
+        #textSummary{
+            max-height:100px;
+        }
+      
+    
+    </style>
+}
+
+
+<!-- outside -->
+<div class="outside">
+ 
+
+    <h2 class="title">新建專案</h2>
+
+    <!-- inside -->
+    <div class="inside">
+       
+           
+            <div class="mb-3 inputField ">
+                <div class="mb-3 form-label">
+                    <label>員工編號</label>
+                    <input class="form-control" value="@Model.UserId" Disabled>
+                </div>
+                <div class="mb-3 form-label">
+                    <label>員工姓名</label>
+                    <input class="form-control" value="@Model.UserName" Disabled>
+                </div>
+            </div>
+            <div class="mb-3 inputField ">
+                <div class="mb-3 form-label">
+                    <label>部門</label>
+                    <input class="form-control" value="@Model.DepartmentName" Disabled>
+                </div>
+                <div class="mb-3 form-label">
+                    <label>專案名稱</label>
+                    <input id="inputProject" class="form-control" placeholder="請輸入專案名稱" oninput="validateProjectName()" required>
+                    <span id="errorProjectName" class="error-message"></span>
+                </div>
+            </div>
+            <div class="mb-3 inputField ">
+                <div class="mb-3 form-label">
+                    <label>專案期限</label>
+                    <input id="inputDeadline" class="form-control" type="date" min="" oninput="validateDeadline()">
+                </div>
+                <div class="mb-3 form-label summaryarea">
+                    <label>專案概要</label>
+                    <textarea id="textSummary" rows="5" cols="52" class="form-control" placeholder="請輸入專案概要，上限300字元" required oninput="validateSummary()"></textarea>
+                    <span id="errorDeadline" class="error-message"></span>
+                </div>
+            </div>
+            <div class="btnArea">
+                    <button type="submit" id="btnSubmit" class="btn btn-warning">送出</button>
+            </div>
+        
+       
+    </div>
+</div>
+
+
+
+
+@section Scripts {
+     
+    <script>
+
+        function validateProjectName() {
+            let projectName = $("#inputProject").val();
+            if (projectName === "") {
+                $("#inputProject").addClass("error-border");
+                // $("#errorProjectName").text("專案名稱不可為空");
+            } else {
+                $("#inputProject").removeClass("error-border");
+                // $("#errorProjectName").text("");
+            }
+        }
+
+        function validateDeadline() {
+            let deadLine = $("#inputDeadline").val();
+            if (deadLine === "") {
+                $("#inputDeadline").addClass("error-border");
+            } else {
+                $("#inputDeadline").removeClass("error-border");
+            }
+        }
+
+      
+
+        function validateSummary() {
+            let summary = $("#textSummary").val();
+            if (summary === "") {
+                $("#textSummary").addClass("error-border");
+            } else {
+                $("#textSummary").removeClass("error-border");
+            }
+        }
+
+        validateProjectName();
+        validateDeadline();
+        validateSummary();
+
+
+        $(document).ready(function () { 
+        $("#btnSubmit").click(function () {
+            let userConfirmed = confirm("是否送出?");
+            if (!userConfirmed) return;
+
+            //檢查資料
+
+            let projectName = $("#inputProject").val();
+            let deadLine = $("#inputDeadline").val();
+            let summary = $("#textSummary").val();
+            let now = new Date(); //現在時間
+            now.setDate(now.getDate() -1);
+            let inputDate = new Date(deadLine); //輸入時間
+            
+            //驗證
+            if (projectName == "") {
+                alert("專案名稱不可為空");
+                return;
+            }
+            if (deadLine == "") {
+                alert("專案期限不可為空");
+                return;
+            }
+
+            if (summary == "") {
+                alert("專案概要不可為空");
+                return;
+            }
+
+            if (inputDate < now) {
+                alert("專案期限不可早於今日");
+                return;
+            }
+
+              
+
+            let formData = new FormData();
+            formData.append('projectName', projectName);
+            formData.append('deadLine', deadLine);
+            formData.append('summary', summary);
+
+            fetch('/CreateProjects/Create',
+                {
+                    method: 'POST',
+                    body: formData,
+
+                }).then(response => {
+                        if (response.ok) {
+                           // alert(response.json());
+                        return response.json(); // 將回應解析為 JSON
+                    } else {
+                        throw new Error('送出失敗'); // 拋出錯誤以進行錯誤處理
+                    }
+                })
+                .then(data => {
+                    // 成功的情況下顯示返回的 message 並跳轉
+                    window.alert(data.message); // 假設 message 在返回的 JSON 中
+                    if (data.message == "送出成功") {
+                        window.location.href = "/QueryProjects/Index/";
+                    }
+                 
+                })
+                // .then((json) => console.log(json))
+                .catch((error) => console.log("Error:", error))
+                // .then((response) => console.log("Success:", response));
+
+            })
+        });
+
+        //min日期
+        let today = new Date();
+        let year = today.getFullYear();
+        let month = String(today.getMonth() + 1).padStart(2, '0'); // 月份從0開始，需+1，padStart補0
+        let day = String(today.getDate()).padStart(2, '0'); // 補0
+
+        // 格式化日期為 YYYY-MM-DD
+        let formattedDate = `${year}-${month}-${day}`;
+
+        // 將 min 設定為今天的日期
+        document.getElementById("inputDeadline").setAttribute("min", formattedDate);
+
+    </script>
+
+}

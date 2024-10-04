@@ -1,0 +1,146 @@
+﻿
+
+@section Style
+{
+    <style>
+        #title{
+            padding-top:20px;
+            padding-left:5px;
+            color: rgba(0, 81, 255, 0.884);
+            font-weight: bold;
+        }
+
+       label{
+            color: red;
+       }
+
+       .upload{
+             margin-top:10px;
+       }
+
+       #btnDel{
+            margin-left:5px;
+       }
+
+       #resultMessage{
+              color:red;
+       }
+    </style>
+}
+
+
+
+<h3 id="title">個人大頭貼設定</h3>
+
+    <!-- 預覽圖片 -->
+    <img id="preview" src="~/images/NoImage.jpg" alt="預覽圖片" style="width:200px;height:200px" />
+
+    <!-- 提示 -->
+    <div>
+    <label>僅限JPG檔案</label>
+    </div>
+           
+    <!-- 上傳圖片 -->
+           
+     <div class="upload">
+   
+    <input id="file" type="file" accept=".jpg" />
+          <button id="btnSubmit" class="btn btn-primary">上傳大頭貼</button>
+          <button id="btnDel" class="btn btn-danger">刪除大頭貼</button>
+     </div>
+
+     <div>
+        <p id="resultMessage"></p>
+     </div>
+          
+    
+@section Scripts
+{
+    <script>
+        // 預覽檔案
+        $("#file").change(function () {
+            let file = $(this).get(0).files[0];
+
+            if (file) {
+                let reader = new FileReader();
+
+                // 當讀取完成時，將圖片的URL設置為預覽
+                reader.onload = function (e) {
+                    $("#preview").attr("src", e.target.result);
+                }
+
+                // 開始讀取檔案
+                reader.readAsDataURL(file);
+            }
+        });
+
+        $("#btnSubmit").click(function () {
+            let userConfirmed = confirm("是否送出?");
+            if (!userConfirmed) return;
+
+            //檢查資料
+
+            let file = $("#file").get(0).files[0];
+
+            let formData = new FormData();
+
+            //單檔案
+            if (file) { formData.append('file', file) };
+            
+            
+            // console.log(formData.get('file'));
+           
+
+            fetch('/Login/UploadProfilePicture',
+                {
+                    method: 'POST',
+                    body: formData,
+
+                }).then(response => {
+                    if (response.ok) {
+                        return response.json(); // 將回應解析為 JSON
+                    } else {
+                        throw new Error('送出失敗'); // 拋出錯誤以進行錯誤處理
+                    }
+                })
+                .then(data => {
+                    // 成功的情況下顯示返回的 message 並跳轉
+                    window.alert(data.message); // 假設 message 在返回的 JSON 中
+                    if (data.success) {
+                        window.location.href = "/Home/Index/";
+                    }
+
+                })
+                .catch(error => {
+                    // 處理錯誤情況
+                    window.alert(error.message || '送出失敗');
+                });
+        });
+
+
+        $("#btnDel").click(function () {
+
+            let UseConfirmed = confirm("是否送出?");
+            if (!UseConfirmed) return
+            
+            $.ajax({
+                url: '@Url.Action("DeletePicture","Login")',
+                type: "GET",
+                success: function (response) {
+                    alert(response.message);
+                    if (response.message == "檔案已刪除") { 
+                        window.location.href = "/Home/Index/";
+                    }
+                    
+                },
+                error: function () {
+                    alert("發生錯誤，請再試一次。");
+                }
+
+            });
+        });
+
+
+
+    </script>
+}

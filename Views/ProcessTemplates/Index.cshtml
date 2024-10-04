@@ -1,0 +1,729 @@
+﻿@model BPMPlus.ViewModels.GetDataForCategoryCreate
+
+<!-- Google Font: Source Sans Pro -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="~/AdminLTE/plugins/fontawesome-free/css/all.min.css">
+<!-- daterange picker -->
+<link rel="stylesheet" href="~/AdminLTE/plugins/daterangepicker/daterangepicker.css">
+<!-- iCheck for checkboxes and radio inputs -->
+<link rel="stylesheet" href="~/AdminLTE/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+<!-- Bootstrap Color Picker -->
+<link rel="stylesheet" href="~/AdminLTE/plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css">
+<!-- Tempusdominus Bootstrap 4 -->
+<link rel="stylesheet" href="~/AdminLTE/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+<!-- Select2 -->
+<link rel="stylesheet" href="~/AdminLTE/plugins/select2/css/select2.min.css">
+<link rel="stylesheet" href="~/AdminLTE/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+<!-- Bootstrap4 Duallistbox -->
+<link rel="stylesheet" href="~/AdminLTE/plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css">
+<!-- BS Stepper -->
+<link rel="stylesheet" href="~/AdminLTE/plugins/bs-stepper/css/bs-stepper.min.css">
+<!-- dropzonejs -->
+<link rel="stylesheet" href="~/AdminLTE/plugins/dropzone/min/dropzone.min.css">
+<!-- Theme style -->
+@* <link rel="stylesheet" href="~/AdminLTE/dist/css/adminlte.min.css"> *@
+<link rel="stylesheet" href="~/AdminLTE/plugins/fontawesome-free/css/all.min.css">
+<!-- Theme style -->
+@* <link rel="stylesheet" href="~/AdminLTE/dist/css/adminlte.min.css"> *@
+@section Style {
+    <style>
+        /* 讓檔案列表出現在上傳 input 的下方 */
+        .card{
+            width: 20%;
+        }
+        #fileList {
+            margin-top: 1%; /* 與上傳 input 保持適當距離 */
+            padding: 0;
+            list-style-type: none;
+        }
+
+        #fileListContainer {
+            padding: 10px;
+            margin-top: 10px;
+            overflow-y: auto;
+        }
+
+        #fileList li {
+            margin-bottom: 1%; /* 每個檔案的間距 */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* 刪除按鈕的樣式 */
+        #fileList button {
+            background-color: red;
+            color: white;
+            height: 50%: border: none;
+            cursor: pointer;
+        }
+
+        .content-wrapper {
+            background-image: linear-gradient(120deg, #ffffff 0%, #0079ff2e 100%);
+        }
+
+        #cardContainer{
+            margin-top: 8%;
+            background-color: rgb(0 123 255 / 16%);
+            display: flex;
+            overflow-x: auto;
+            width: 100%;
+            box-shadow: 0 0 1px rgba(0, 0, 0, .125), 0 1px 3px rgba(0, 0, 0, .2);
+            border-radius: 0.25rem;
+        }
+
+        .outside {
+            padding: 20px;
+            height: 100%;
+        }
+
+        .title {
+            color: #007bff;
+            font-weight: bold;
+            margin-bottom:30px;
+        }
+
+        .inside {
+            padding: 2%;
+            background-color: white;
+            border-radius: 0.25rem;
+            box-shadow: 0 0 1px rgba(0, 0, 0, .125), 0 1px 3px rgba(0, 0, 0, .2);
+        }
+
+        .list {
+            display: flex;
+            justify-content: space-around;
+            list-style: none;
+        }
+
+        .bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-left: 10px;
+        }
+
+        #BackToForm {
+            margin-left: auto;
+        }
+
+        #FormCategory {
+            margin-left: auto;
+        }
+
+
+        .inputField {
+            display: flex;
+            height: 40px;
+        }
+
+        .form-label {
+            padding-top: 20px;
+            display: flex;
+            width: 50%;
+            margin: 2%;
+        }
+        #process-node{
+            margin:1%;
+        }
+        label {
+            margin: auto;
+            display: inline;
+            width: 150px;
+            margin-right: 20PX;
+            background-color: #458bfc;
+            text-align: center;
+            color: white;
+            text-decoration: double;
+            border-radius: 5%;
+        }
+
+        .form-file {
+            padding-top: 20px;
+            display: flex;
+            width: 50%;
+            margin: 2%;
+        }
+
+        .dropdown-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .form-date {
+            padding-top: 20px;
+            margin-left: 40px;
+            height: 58px;
+            display: flex;
+        }
+
+        .noteContent {
+            background-color: #458bfc;
+            color: white;
+            border-radius: 5%;
+            width: 100px;
+            text-align: center;
+        }
+
+        .txtInput {
+            width: 100%;
+            background-color: white;
+        }
+
+        .submit-btn {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .upload {
+            width: 100%;
+        }
+
+        button#submitButton {
+            margin:10px 0;
+            width: 90px;
+        }
+
+        button#duplicateButton {
+            font-weight: bold;
+            color: #007bff;
+            background-color: #ffffff;
+            border-style: none;
+            border-radius: 0.25rem;
+            font-size: xx-large;
+        }
+
+    </style>
+}
+
+
+
+<!-- outside -->
+<div class="outside">
+    @Html.AntiForgeryToken()
+    <div style="color:red;">
+        @ViewBag.errMsg
+    </div>
+    <h2 class="title">新增工單需求類別</h2>
+
+    <!-- inside -->
+    <div class="inside">
+        <form>
+            <div class="mb-3 inputField ">
+                <div class="mb-3 form-label"style="width:50%">
+                    <label for="xxx1">工單類別名稱</label>
+                    <input type="xxx1" class="form-control" id="category">
+                </div>
+            </div>
+        </form>
+        
+        <div id="cardContainer">
+            @for (int nodeIndex = 0; nodeIndex < Model.TemplateOfNodeTemplates.Nodes.Count; ++nodeIndex)
+            {
+                <div class="card card-primary" id="process-node" style="min-width: 300px; max-width: 300px; margin-right: 10px;">
+                    <div class="card-header" style="display: block; text-align: center">
+                        <h5 style="width: 100%; font-weight: bold">流程節點</h5>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label style="display: block; align-self: center; width: 100%">部門</label>
+                            @if (Model.TemplateOfNodeTemplates.Nodes[nodeIndex].DepartmentId == "Requester")
+                            {
+                                <select class="custom-select form-control-border" id="department" name="department" style="font-size: small" disabled>
+                                    @foreach (var department in Model.DepartmentDict)
+                                    {
+                                        @if (department.Key == Model.TemplateOfNodeTemplates.Nodes[nodeIndex].DepartmentId)
+                                        {
+                                            <option selected value="@department.Key" style="font-size: small">@department.Value</option>
+                                        }
+                                        @if (department.Key != Model.TemplateOfNodeTemplates.Nodes[nodeIndex].DepartmentId)
+                                        {
+                                            <option value="@department.Key" style="font-size: small">@department.Value</option>
+                                        }
+                                    }
+                                </select>
+                            }
+                            @if (Model.TemplateOfNodeTemplates.Nodes[nodeIndex].DepartmentId != "Requester")
+                            {
+                                <select class="custom-select form-control-border" id="department" name="department" style="font-size: small">
+                                    @foreach (var department in Model.DepartmentDict)
+                                    {
+                                        @if (department.Key == Model.TemplateOfNodeTemplates.Nodes[nodeIndex].DepartmentId)
+                                        {
+                                            <option selected value="@department.Key" style="font-size: small">@department.Value</option>
+                                        }
+                                        @if (department.Key != Model.TemplateOfNodeTemplates.Nodes[nodeIndex].DepartmentId)
+                                        {
+                                            <option value="@department.Key" style="font-size: small">@department.Value</option>
+                                        }
+                                    }
+                                </select>
+                            }
+
+                        </div>
+                        <div class="form-group">
+                            <label style="display: block; align-self: center; width: 100%">功能</label>
+                            <select class="custom-select form-control-border" id="userActivity" name="userActivity" style="font-size: smaller" disabled>
+                                @foreach (var activity in Model.UserActivityDict)
+                                {
+                                    @if (activity.Key == Model.TemplateOfNodeTemplates.Nodes[nodeIndex].UserActivityId)
+                                    {
+                                        <option selected value="@activity.Key" style="font-size: small">@activity.Value</option>
+                                    }
+                                    @if (activity.Key != Model.TemplateOfNodeTemplates.Nodes[nodeIndex].UserActivityId)
+                                    {
+                                        <option value="@activity.Key" style="font-size: small">@activity.Value</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+
+                @if (nodeIndex == 0)
+                {
+                    <button id="duplicateButton" style="margin: 1%" onclick="duplicateCard()">+</button>
+                }
+            }
+        </div>
+        
+        
+
+        <!-- 送出按鈕 -->
+        <div class="submit-btn">
+            <button type="submit" id="submitButton" class="btn btn-primary">送出</button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- jQuery -->
+    <script src="~/AdminLTE/plugins/jquery/jquery.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="~/AdminLTE/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- Select2 -->
+    <script src="~/AdminLTE/plugins/select2/js/select2.full.min.js"></script>
+    <!-- Bootstrap4 Duallistbox -->
+
+
+    <script src="~/AdminLTE/plugins/inputmask/jquery.inputmask.min.js"></script>
+    <!-- date-range-picker -->
+
+
+    <script src="~/AdminLTE/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+
+
+    <!-- AdminLTE for demo purposes -->
+    <script src="~/AdminLTE/dist/js/demo.js"></script>
+    <script>
+        function duplicateCard() {
+            // 取得卡片容器
+            var cardContainer = document.getElementById("cardContainer");
+            // 取得第一個卡片
+            var firstCard = cardContainer.querySelector(".card");
+
+            // 複製第一張卡片
+            var newCard = firstCard.cloneNode(true);
+
+            // 移除複製卡片內所有 select 元素的 disabled 屬性
+            var selectElements = newCard.querySelectorAll("select");
+            selectElements.forEach(function (select) {
+                select.removeAttribute("disabled");
+            });
+
+            // 為新增卡片添加刪除按鈕
+            var deleteButton = document.createElement("button");
+            deleteButton.type = "button";
+            deleteButton.classList.add("btn", "btn-danger", "deleteButton");
+            deleteButton.style.marginTop = "10px";
+            deleteButton.innerText = "刪除";
+            deleteButton.onclick = function () {
+                deleteCard(this);
+            };
+
+            // 插入刪除按鈕到新卡片
+            newCard.querySelector(".card-body").appendChild(deleteButton);
+
+            // 插入到第一張卡片的右邊
+            cardContainer.insertBefore(newCard, firstCard.nextSibling);
+        }
+
+        function deleteCard(button) {
+            // 找到包含該按鈕的卡片
+            var card = button.closest(".card");
+            // 刪除該卡片
+            card.remove();
+        }
+    </script>
+    <script>
+        $(document).ready(function() 
+            {
+                // 綁定按鈕點擊事件
+                $("#submitButton").on("click", function(e) 
+                {
+                    // e.preventDefault();  // 阻止默認的提交行為
+
+                    // // 獲取輸入欄位的值
+                    // var tel = $("#Tel").val();
+                    // var expectedFinishedDay = $("#ExpectedFinishedDay").val()
+                    // var departmentId =document.getElementById("DepartmentId").getAttribute("inside")
+                    // var pj = document.getElementById('projectId');
+                    // var projectId = pj.options[pj.selectedIndex].value;
+                    var ct = document.getElementById("category").value
+                    var cards = document.querySelectorAll("#cardContainer .card");
+                    var nodes = [];
+
+                    // 遍歷每個卡片，提取 userActivityId 和 departmentId
+                    cards.forEach(function (card, index) {
+                        var departmentId = card.querySelector("#department").value;
+                        var userActivityId = card.querySelector("#userActivity").value;
+
+                        // 組織每個節點的資料
+                        nodes.push({
+                            UserActivityId: userActivityId,
+                            DepartmentId: departmentId
+                        });
+                    });
+                    // var categoryId = ct.options[ct.selectedIndex].getAttribute("data-id");
+                    // var content = $('#summernote').summernote('code');
+                    // // 檢查是否有空值
+                    // if (!tel || !departmentId || !categoryId || !expectedFinishedDay || !content || content == "<p><br></p>") {
+                    //     console.log( "分機" + tel)
+                    //     if(!tel){window.alert("尚未填寫聯絡電話");return ;} 
+                    //     console.log( "部門ID" + departmentId)
+                    //     if(!departmentId){window.alert("尚未填寫聯絡部門");return ;} 
+                    //     console.log( "需求"  + categoryId)
+                    //     if(!categoryId){window.alert("尚未選擇需求類別");return ;} 
+                    //     console.log("希望完成時間" + expectedFinishedDay)
+                    //     if(!expectedFinishedDay){window.alert("尚未填寫希望完成時間");return ;} 
+                    //     console.log("需求內容" + content)
+                    //     if(!content || content == "<p><br></p>"){window.alert("尚未填寫需求內容");return ;} 
+                    // }
+                    // var form = $('#__AjaxAntiForgeryForm');
+                    // var token = $('input[name="__RequestVerificationToken"]', form).val();
+                    // // 發送 Ajax 請求
+                    // var formData = new FormData();
+
+                    // // 將 filesArray 中的每個檔案加入 FormData
+                    // filesArray.forEach(function(file) {
+                    //     formData.append("files", file);
+                    // });
+                    // let formId = "";
+                    // let createResponseErrorCode = 0;
+                   
+                    $.ajax({
+                        url: '/ProcessTemplates/CreateCategory',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        headers: {
+                            'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()  // 傳送驗證 token
+                        },
+                        data: JSON.stringify({
+                            CategoryName: ct,
+                            Nodes: nodes
+                        }),
+                        success: function(response) {
+                            createResponseErrorCode = response['errorCode'];
+                            if (response['errorCode'] != null && response['errorCode'] == 200) {
+                                // formId = response['formId']
+                                // upload()
+                                window.alert(response['message']);
+                            window.location.replace("/Home/Index");
+                            }
+                            if(response['errorCode'] != null && response['errorCode'] == 400)
+                            {
+                                window.alert(response['message']);
+                            }
+                            // 成功後的操作
+                        },
+                        error: function(xhr, status, error) {
+                            
+
+                            // 錯誤時的操作
+                        }
+                    });
+                });
+            });
+        $(function () {
+            //Initialize Select2 Elements
+            $('.select2').select2()
+
+            //Initialize Select2 Elements
+            $('.select2bs4').select2({
+                theme: 'bootstrap4'
+            })
+
+            //Datemask dd/mm/yyyy
+            $('#datemask').inputmask('dd/mm/yyyy', { 'placeholder': 'dd/mm/yyyy' })
+            //Datemask2 mm/dd/yyyy
+            $('#datemask2').inputmask('mm/dd/yyyy', { 'placeholder': 'mm/dd/yyyy' })
+            //Money Euro
+            $('[data-mask]').inputmask()
+
+            //Date picker
+            $('#reservationdate').datetimepicker({
+                format: 'L'
+            });
+
+            //Date and time picker
+            $('#reservationdatetime').datetimepicker({ icons: { time: 'far fa-clock' } });
+
+            //Date range picker
+            $('#reservation').daterangepicker()
+            //Date range picker with time picker
+            $('#reservationtime').daterangepicker({
+                timePicker: true,
+                timePickerIncrement: 30,
+                locale: {
+                    format: 'MM/DD/YYYY hh:mm A'
+                }
+            })
+            //Date range as a button
+            $('#daterange-btn').daterangepicker(
+                {
+                    ranges: {
+                        'Today': [moment(), moment()],
+                        'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                        'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                        'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                        'This Month': [moment().startOf('month'), moment().endOf('month')],
+                        'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                    },
+                    startDate: moment().subtract(29, 'days'),
+                    endDate: moment()
+                },
+                function (start, end) {
+                    $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'))
+                }
+            )
+
+            //Timepicker
+            $('#timepicker').datetimepicker({
+                format: 'LT'
+            })
+
+            //Bootstrap Duallistbox
+            $('.duallistbox').bootstrapDualListbox()
+
+            //Colorpicker
+            $('.my-colorpicker1').colorpicker()
+            //color picker with addon
+            $('.my-colorpicker2').colorpicker()
+
+            $('.my-colorpicker2').on('colorpickerChange', function (event) {
+                $('.my-colorpicker2 .fa-square').css('color', event.color.toString());
+            })
+
+            $("input[data-bootstrap-switch]").each(function () {
+                $(this).bootstrapSwitch('state', $(this).prop('checked'));
+            })
+            
+        })
+        // BS-Stepper Init
+        document.addEventListener('DOMContentLoaded', function () {
+            window.stepper = new Stepper(document.querySelector('.bs-stepper'))
+        })
+
+        // DropzoneJS Demo Code Start
+        Dropzone.autoDiscover = false
+
+        // Get the template HTML and remove it from the doumenthe template HTML and remove it from the doument
+        var previewNode = document.querySelector("#template")
+        previewNode.id = ""
+        var previewTemplate = previewNode.parentNode.innerHTML
+        previewNode.parentNode.removeChild(previewNode)
+
+        var myDropzone = new Dropzone(document.body, { // Make the whole body a dropzone
+            url: "/target-url", // Set the url
+            thumbnailWidth: 80,
+            thumbnailHeight: 80,
+            parallelUploads: 20,
+            previewTemplate: previewTemplate,
+            autoQueue: false, // Make sure the files aren't queued until manually added
+            previewsContainer: "#previews", // Define the container to display the previews
+            clickable: ".fileinput-button" // Define the element that should be used as click trigger to select files.
+        })
+
+        myDropzone.on("addedfile", function (file) {
+            // Hookup the start button
+            file.previewElement.querySelector(".start").onclick = function () { myDropzone.enqueueFile(file) }
+        })
+
+        // Update the total progress bar
+        myDropzone.on("totaluploadprogress", function (progress) {
+            document.querySelector("#total-progress .progress-bar").style.width = progress + "%"
+        })
+
+        myDropzone.on("sending", function (file) {
+            // Show the total progress bar when upload starts
+            document.querySelector("#total-progress").style.opacity = "1"
+            // And disable the start button
+            file.previewElement.querySelector(".start").setAttribute("disabled", "disabled")
+        })
+
+        // Hide the total progress bar when nothing's uploading anymore
+        myDropzone.on("queuecomplete", function (progress) {
+            document.querySelector("#total-progress").style.opacity = "0"
+        })
+
+        // Setup the buttons for all transfers
+        // The "add files" button doesn't need to be setup because the config
+        // `clickable` has already been specified.
+        document.querySelector("#actions .start").onclick = function () {
+            myDropzone.enqueueFiles(myDropzone.getFilesWithStatus(Dropzone.ADDED))
+        }
+        document.querySelector("#actions .cancel").onclick = function () {
+            myDropzone.removeAllFiles(true)
+        }
+        // DropzoneJS Demo Code End
+
+
+        $(function () {
+            //Initialize Select2 Elements
+            $('.select2').select2()
+
+            //Initialize Select2 Elements
+            $('.select2bs4').select2({
+                theme: 'bootstrap4'
+            })
+
+            //Datemask dd/mm/yyyy
+            $('#datemask').inputmask('dd/mm/yyyy', { 'placeholder': 'dd/mm/yyyy' })
+            //Datemask2 mm/dd/yyyy
+            $('#datemask2').inputmask('mm/dd/yyyy', { 'placeholder': 'mm/dd/yyyy' })
+            //Money Euro
+            $('[data-mask]').inputmask()
+
+            //Date picker
+            $('#reservationdate').datetimepicker({
+                format: 'L'
+            });
+
+            //Date and time picker
+            $('#reservationdatetime').datetimepicker({ icons: { time: 'far fa-clock' } });
+
+            //Date range picker
+            $('#reservation').daterangepicker()
+            //Date range picker with time picker
+            $('#reservationtime').daterangepicker({
+                timePicker: true,
+                timePickerIncrement: 30,
+                locale: {
+                    format: 'MM/DD/YYYY hh:mm A'
+                }
+            })
+            //Date range as a button
+            $('#daterange-btn').daterangepicker(
+                {
+                    ranges: {
+                        'Today': [moment(), moment()],
+                        'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                        'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                        'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                        'This Month': [moment().startOf('month'), moment().endOf('month')],
+                        'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                    },
+                    startDate: moment().subtract(29, 'days'),
+                    endDate: moment()
+                },
+                function (start, end) {
+                    $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'))
+                }
+            )
+
+            //Timepicker
+            $('#timepicker').datetimepicker({
+                format: 'LT'
+            })
+
+            //Bootstrap Duallistbox
+            $('.duallistbox').bootstrapDualListbox()
+
+            //Colorpicker
+            $('.my-colorpicker1').colorpicker()
+            //color picker with addon
+            $('.my-colorpicker2').colorpicker()
+
+            $('.my-colorpicker2').on('colorpickerChange', function (event) {
+                $('.my-colorpicker2 .fa-square').css('color', event.color.toString());
+            })
+
+            $("input[data-bootstrap-switch]").each(function () {
+                $(this).bootstrapSwitch('state', $(this).prop('checked'));
+            })
+
+        })
+        // BS-Stepper Init
+        document.addEventListener('DOMContentLoaded', function () {
+            window.stepper = new Stepper(document.querySelector('.bs-stepper'))
+        })
+
+        // DropzoneJS Demo Code Start
+        Dropzone.autoDiscover = false
+
+        // Get the template HTML and remove it from the doumenthe template HTML and remove it from the doument
+        var previewNode = document.querySelector("#template")
+        previewNode.id = ""
+        var previewTemplate = previewNode.parentNode.innerHTML
+        previewNode.parentNode.removeChild(previewNode)
+
+        var myDropzone = new Dropzone(document.body, { // Make the whole body a dropzone
+            url: "/target-url", // Set the url
+            thumbnailWidth: 80,
+            thumbnailHeight: 80,
+            parallelUploads: 20,
+            previewTemplate: previewTemplate,
+            autoQueue: false, // Make sure the files aren't queued until manually added
+            previewsContainer: "#previews", // Define the container to display the previews
+            clickable: ".fileinput-button" // Define the element that should be used as click trigger to select files.
+        })
+
+        myDropzone.on("addedfile", function (file) {
+            // Hookup the start button
+            file.previewElement.querySelector(".start").onclick = function () { myDropzone.enqueueFile(file) }
+        })
+
+        // Update the total progress bar
+        myDropzone.on("totaluploadprogress", function (progress) {
+            document.querySelector("#total-progress .progress-bar").style.width = progress + "%"
+        })
+
+        myDropzone.on("sending", function (file) {
+            // Show the total progress bar when upload starts
+            document.querySelector("#total-progress").style.opacity = "1"
+            // And disable the start button
+            file.previewElement.querySelector(".start").setAttribute("disabled", "disabled")
+        })
+
+        // Hide the total progress bar when nothing's uploading anymore
+        myDropzone.on("queuecomplete", function (progress) {
+            document.querySelector("#total-progress").style.opacity = "0"
+        })
+
+        // Setup the buttons for all transfers
+        // The "add files" button doesn't need to be setup because the config
+        // `clickable` has already been specified.
+        document.querySelector("#actions .start").onclick = function () {
+            myDropzone.enqueueFiles(myDropzone.getFilesWithStatus(Dropzone.ADDED))
+        }
+        document.querySelector("#actions .cancel").onclick = function () {
+            myDropzone.removeAllFiles(true)
+        }
+        // DropzoneJS Demo Code End
+
+    </script>
+    <script src="~/AdminLTE/plugins/jquery/jquery.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="~/AdminLTE/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- bs-custom-file-input -->
+    <script src="~/AdminLTE/plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
+    
+    <script src="~/AdminLTE/dist/js/demo.js"></script>
+
+}
+
+

@@ -1,0 +1,238 @@
+﻿@model IEnumerable<BPMPlus.Models.User>
+@section Style {
+	<meta charset="UTF-8">
+	<style>
+		.content-wrapper {
+			background-image: linear-gradient(135deg, #f5f7fa 0%, #f2f7ff 100%);
+		}
+
+		.container-fluid {
+			padding: 20px;
+		}
+
+		.table-container {
+			padding: 10px;
+			border-radius: 0.25rem;
+			background-color: white;
+			box-shadow: 0 0 1px rgba(0, 0, 0, .125), 0 1px 3px rgba(0, 0, 0, .2);
+		}
+
+		#mainpart {
+			padding: 30px 40px;
+		}
+
+		.txtTitle {
+			font-weight:bold;
+			margin-bottom:30px;
+			color: #333333;
+		}
+
+		.selectbtn {
+			background-color: #458bfc;
+			color: white;
+			font-weight: bold;
+		}
+
+		.content {
+			/* 	background-color:#FFF8D7; */
+		}
+
+			.content .connectedSortable option {
+				background-color: white;
+				color: #458bfc;
+				font-weight: bold;
+			}
+
+		.clearfix button {
+			background-color: #458bfc;
+		}
+
+		.table-bordered {
+			text-align: center;
+		}
+
+		::placeholder {
+			color: aliceblue;
+		}
+
+		.user-table thead th {
+			font-size: 20px;
+			font-weight: bold;
+		}
+
+		.user-table tbody td {
+			font-size: 18px;
+			text-align: center;
+		}
+
+
+		.user-table .pagination__rows-per-page {
+			font-size: 20px;
+		}
+
+		.user-table .pagination__items-index {
+			font-size: 20px;
+		}
+
+		.user-table .active {
+			font-size: 18px;
+		}
+
+
+
+
+	</style>
+	<link rel="stylesheet" href="~/font-awesome/css/all.css" />
+	<link href="https://unpkg.com/vue3-easy-data-table/dist/style.css" rel="stylesheet" />
+}
+
+
+
+@* <div class="content-header">
+	<div class="container-fluid">
+		<div class="row mb-3 mx-4 justify-content-between">
+			
+		</div>
+	</div>
+</div> *@
+
+
+<div class="container-fluid">
+	<h2 class="txtTitle">查詢人員</h2>
+	<div class="table-container">
+		<div class="row" id="app">
+			<section class="connectedSortable">
+				<div class="container" style="width:50%;margin-left:auto;margin-right:0px">
+					<div class="mb-3">
+						<label class="form-label">篩選關鍵字:</label>
+						<input type="text" class="form-control" v-model="searchValue" placeholder="請輸入篩選關鍵字" />
+					</div>
+				</div>
+
+				<easy-data-table theme-color="#1d90ff"
+								 table-class-name="user-table"
+								 alternating
+								 :headers="headers"
+								 :items="items"
+								 buttons-pagination
+								 :rows-per-page="10"
+								 :search-value="searchValue"
+								 style="width: 100%;"
+				@@pagination-change="updateTableHeight">
+					<template #empty-message>
+						<a href="#">未發現符合條件的記錄!</a>
+					</template>
+					<template #item-operation="item">
+						<div class="operation-wrapper">
+							<img src="@Url.Content("~/images/userdata/edit.png")"
+								 class="operation-icon"
+								 @@click="editItem(item)" />
+							<img src="@Url.Content("~/images/userdata/delete.png")"
+								 class="operation-icon"
+								 @@click="deleteItem(item)" />
+							<img src="@Url.Content("~/images/userdata/search.png")"
+								 class="operation-icon"
+								 @@click="detailItem(item)" />
+
+						</div>
+					</template>
+
+
+				</easy-data-table>
+			</section>
+		</div>
+	</div>
+
+</div>
+@section Scripts {
+	<script src="https://unpkg.com/vue@latest"></script>
+	<script src="https://unpkg.com/vue3-easy-data-table"></script>
+	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+	<script>
+		const vueApp = {
+			components: {
+				EasyDataTable: window['vue3-easy-data-table'],
+			},
+			data() {
+				return {
+					baseAddress: "https://localhost:7129/Users",
+					headers: [
+						{ text: "員工編號", value: "userId", sortable: true },
+						{ text: "姓名", value: "userName", sortable: true },
+						{ text: "部門", value: "departmentName", sortable: true },
+						{ text: "職位", value: "gradeName", sortable: true },
+						{ text: "Email", value: "email" },
+						{ text: "建檔時間", value: "incertDataTime", sortable: true },
+						{ text: "是否在職", value: "userIsActive", sortable: true },
+						{ text: "功能", value: "operation" },
+					],
+					items: [],
+					searchValue: "",
+				};
+			},
+			watch: {
+				rowsPerPage() {
+					this.updateTableHeight();
+				},
+				items() {
+					this.updateTableHeight();
+				},
+			},
+			methods: {
+				updateTableHeight() {
+					const rowHeight = 50; 
+					const newHeight = this.items.length * rowHeight;
+					this.tableHeight = Math.min(newHeight, 1000); 
+				},
+				fetchItems() {
+					let _this = this;
+					axios.get(`${this.baseAddress}/userData`)
+						.then(response => {
+							this.items = response.data;
+						})
+						.catch((error) => console.log(error));
+				},
+				deleteItem: function (item) {
+					let _this = this;
+					// alert(`${item.userId}`)
+					// alert("點擊離職")
+					axios({
+						method: 'delete',
+						url: `${_this.baseAddress}/Invalid/${item.userId}`,
+					})
+						.then((response) => {
+						if (response.data.success) {
+						 _this.fetchItems();
+						 alert("更改在職狀態成功")
+						 } else {
+					      alert(response.data.message); 
+						 }
+							})
+					.catch((error) => {
+					   alert("更改在職狀態失敗");
+						});
+				},
+				editItem: function (item) {
+					let _this = this;
+					window.location.href = `${_this.baseAddress}/Edit/${item.userId}`;
+				},
+				detailItem: function (item) {
+					let _this = this;
+					// alert(`${item.userId}`
+					window.location.href = `${_this.baseAddress}/Details/${item.userId}`;
+
+				},
+
+			},
+			mounted() {
+				let _this = this;
+				_this.fetchItems();
+			}
+		};
+
+		var app = Vue.createApp(vueApp).mount('#app');
+	</script>
+
+}
+

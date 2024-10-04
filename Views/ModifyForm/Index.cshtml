@@ -1,0 +1,500 @@
+﻿@model BPMPlus.ViewModels.ModifyFormGroupViewModel
+
+@section Style {
+
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="~/AdminLTE/plugins/fontawesome-free/css/all.min.css">
+    <!-- daterange picker -->
+    <link rel="stylesheet" href="~/AdminLTE/plugins/daterangepicker/daterangepicker.css">
+    <!-- iCheck for checkboxes and radio inputs -->
+    <link rel="stylesheet" href="~/AdminLTE/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <!-- Bootstrap Color Picker -->
+    <link rel="stylesheet" href="~/AdminLTE/plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css">
+    <!-- Tempusdominus Bootstrap 4 -->
+    <link rel="stylesheet" href="~/AdminLTE/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+    <!-- Select2 -->
+    <link rel="stylesheet" href="~/AdminLTE/plugins/select2/css/select2.min.css">
+    <link rel="stylesheet" href="~/AdminLTE/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+    <!-- Bootstrap4 Duallistbox -->
+    <link rel="stylesheet" href="~/AdminLTE/plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css">
+    <!-- BS Stepper -->
+    <link rel="stylesheet" href="~/AdminLTE/plugins/bs-stepper/css/bs-stepper.min.css">
+    <!-- dropzonejs -->
+    <link rel="stylesheet" href="~/AdminLTE/plugins/dropzone/min/dropzone.min.css">
+    <!-- Theme style -->
+                                            @*     <link rel="stylesheet" href="~/AdminLTE/dist/css/adminlte.min.css"> *@
+    <link rel="stylesheet" href="~/font-awesome/css/all.css" />
+
+    <!-- summernote -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-lite.min.css" rel="stylesheet">
+
+    <style>
+        .content-wrapper {
+            background-image: linear-gradient(120deg, #ffffff 0%, #0079ff2e 100%);
+            padding: 2.5px;
+        }
+
+        .title {
+            color: rgba(0, 81, 255, 0.884);
+            font-weight: bold;
+            margin-top: 8px;
+            margin-bottom: 30px;
+        }
+
+        .backcolor {
+            background-color: rgb(225, 239, 252);
+        }
+
+        .item-name {
+            padding-right: 1%;
+            width: 28%;
+        }
+
+        .item-value {
+            width: 0%;
+        }
+
+        .button {
+            width: 12 %;
+        }
+
+        .button-icon {
+            width: 20%;
+        }
+
+        .process-node {
+            background-color: rgb(232, 244, 255);
+            height: 200px;
+        }
+
+        .btn-link {
+            color: white;
+        }
+
+        textarea {
+            resize: none;
+        }
+
+        .txt-box {
+            width: 50%;
+        }
+
+        .selection {
+            width: 50%;
+        }
+
+        .date {
+            width: 50%;
+        }
+
+        .content {
+            padding: 10px;
+        }
+
+        .form-group {
+            display: flex;
+        }
+
+        #btnUpload {
+            width: 200px;
+            margin-left: 10px;
+        }
+
+        #attachment {
+            width: 50px;
+        }
+
+        #txtInput {
+            width:100%;
+        }
+
+    </style>
+}
+
+<div class="wrapper-backcolor">
+
+
+    <!-- Content Wrapper. Contains page content -->
+    <!-- Content Header (Page header) -->
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <h2 class="title">
+                修改工單
+            </h2>
+
+            <!-- SELECT2 EXAMPLE -->
+
+            <input type="hidden" name="id" value="@Model.ModifyFrom.Id" />
+            <div class="card card-default col-md-12">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <!-- /.form-group單號 -->
+                            <div class="form-group">
+                                <label class="item-name">單號</label><input asp-for="ModifyFrom.FormId" class="form-control txt-box" disabled value="@Model.ModifyFrom.FormId">
+                            </div>
+                            <br />
+                            <br />
+                            <!-- /.form-group 建立日期-->
+                            <div class="form-group">
+                                <label class="item-name">建立日期</label><input class="form-control txt-box" disabled value="@Model.ModifyFrom.Date">
+                            </div>
+                            <!-- /.form-group 需求部門-->
+                            <div class="form-group" style="display:flex">
+                                <label class="item-name">需求部門</label>
+                                <select class="form-control select2 selection" disabled>
+                                    <option>@Model.ModifyFrom.DepartmentName</option>
+                                </select>
+                            </div>
+                            <!-- /.form-group 希望完成日期-->
+                            <div class="form-group" style="display:flex">
+                                <label class="item-name">希望完成日期</label>
+                                <div class="input-group date">
+                                    <div class="input-group-prepend">
+                                    </div>
+                                    <input asp-for="ModifyFrom.ExpectedFinishedDay" type="date" class="form-control float-right" id="endDatePicker" value="@Model.ModifyFrom.ExpectedFinishedDay" min="">
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /作廢 -->
+                        <div id="partRight" class="col-md-6">
+
+                            <input type="hidden" name="id" value="@Model.ModifyFrom.Id" />
+                            <div style="display:flex">
+                                <div style="width:60%"></div>
+                                <div class="form-group">
+                                    @if (Model.ModifyFrom.FormIsActive)
+                                    {
+                                        <button id="btnInvalid" class="button btn btn-danger" type="button"><i class="fa-solid fa-trash"></i>作廢</button>
+                                    }
+                                    else
+                                    {
+                                    <button id="btnInvalid" class="button btn btn-danger" type="button" disabled><i class="fa-solid fa-trash"></i>作廢</button>
+                                    }
+
+                                </div>
+                            </div>
+
+                            <br />
+                            <br />
+                            <div>
+                                <div class="form-group" style="display:flex">
+                                    <label class="item-name">需求類別</label><input class="form-control txt-box" Disabled value="@Model.ModifyFrom.CategoryDescription">
+                                    @*         <select class="form-control select2 selection">
+                                    @foreach (var item in Model.Categories)
+                                    {
+                                    <option >@item.CategoryDescription</option>
+                                    }
+                                    </select>  *@
+                                </div>
+                                <!-- /.form-group 需求員工-->
+                                <div class="form-group">
+                                    <label class="item-name">需求員工</label><input class="form-control txt-box" Disabled value="@Model.ModifyFrom.EmployeeName">
+                                </div>
+                                <!-- /.form-group 所屬專案-->
+                                @*   <div class="form-group">
+                                <label class="item-name">所屬專案</label>
+                                <select class="form-control select2 selection" >
+                                @foreach (var project in Model.Projects)
+                                {
+
+                                }
+                                </select>
+                                </div> *@
+                            </div>
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                    <br />
+                    <br />
+                    <!-- /.row -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="item-name">需求內容</label>
+                            </div>
+                            @* <textarea asp-for="ModifyFrom.Content" rows="8" cols="110">@(Model.ModifyFrom.Content)</textarea> *@
+                            <div class="txtInput" id="txtInput">
+                                <div id="summernote">@Html.Raw(Model.ModifyFrom.Content)</div>
+                            </div>
+                        </div>
+
+                        <!-- /.col -->
+                        <!-- /.col -->
+                    </div>
+                    <div class="row">
+                        <!-- /.form-group聯繫電話 -->
+                        <div class="form-group">
+                            <label style="margin-right:5%">聯繫電話</label><input asp-for="ModifyFrom.Tel" class=" form-control" style="width:25%" value="@Model.ModifyFrom.Tel" disabled>
+                        </div>
+
+                        <!-- /.form-group -->
+                        <div class="col-12 col-sm-6">
+
+                            <!-- /.form-group 附件上傳-->
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-12 col-sm-7" style="display:flex">
+
+                            <input type="hidden" name="id" value="@Model.ModifyFrom.Id" />
+                            <div class="form-group">
+                                <label id="attachment">附件</label>
+                                <input type="file" name="file" class="form-control" id="file" multiple />
+                                @*  <button id="btnUpload" class="button btn btn-primary" type="button"><i class="fa-solid fa-cloud-arrow-up"></i>  附件上傳</button> *@
+                                <div>
+                                    @ViewBag.Message
+                                </div>
+                            </div>
+
+                            <div style="width:10%"></div>
+                            <!-- /.form-group 送出修改-->
+                        </div>
+
+                        <div class="col-12 col-sm-5" style="display:flex">
+                            <div style="width:10%"></div>
+                            <div class="form-group">
+                                @if (Model.ModifyFrom.FormIsActive)
+                                {
+                                    <button id="btnEdit" class="button btn btn-warning btn-link" type="button"><i class="fa-solid fa-file-export"></i> 送出修改</button>
+                                }
+                                else
+                                {
+                                    <button id="btnEdit" class="button btn btn-warning btn-link" type="button" disabled><i class="fa-solid fa-file-export"></i> 送出修改</button>
+                                }
+
+                            </div>
+
+                            <!-- /.form-group -->
+                        </div>
+
+                        <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+                </div>
+
+            </div>
+            <!-- /.row -->
+
+        </div>
+        <!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+@section Scripts
+{
+    <script src="~/AdminLTE/plugins/jquery/jquery.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="~/AdminLTE/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="~/AdminLTE/dist/js/adminlte.min.js"></script>
+    <!-- Summernote -->
+    <script src="~/AdminLTE/plugins/summernote/summernote-bs4.min.js"></script>
+    <!-- CodeMirror -->
+    <script src="~/AdminLTE/plugins/codemirror/codemirror.js"></script>
+    <script src="~/AdminLTE/plugins/codemirror/mode/css/css.js"></script>
+    <script src="~/AdminLTE/plugins/codemirror/mode/xml/xml.js"></script>
+    <script src="~/AdminLTE/plugins/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+    <!-- AdminLTE for demo purposes -->
+    <script src="~/AdminLTE/dist/js/demo.js"></script>
+
+
+
+    <!-- jQuery -->
+    <script src="~/AdminLTE/plugins/jquery/jquery.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="~/AdminLTE/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- Select2 -->
+    <script src="~/AdminLTE/plugins/select2/js/select2.full.min.js"></script>
+    <!-- Bootstrap4 Duallistbox -->
+
+
+    <script src="~/AdminLTE/plugins/inputmask/jquery.inputmask.min.js"></script>
+    <!-- date-range-picker -->
+
+
+    <script src="~/AdminLTE/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+
+
+    <!-- AdminLTE for demo purposes -->
+    <script src="~/AdminLTE/dist/js/demo.js"></script>
+
+
+
+
+
+
+    <script src="~/AdminLTE/plugins/moment/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <script>
+
+        function loadScript(url, callback) {
+            var script = document.createElement('script');
+            script.src = url;
+            script.type = 'text/javascript';
+            script.onload = function () {
+                if (callback) {
+                    callback();
+                }
+            };
+            document.head.appendChild(script);
+        };
+
+                    
+
+        $(document).ready(function () {
+            loadScript('/AdminLTE/plugins/summernote/summernote-bs4.js', function () {
+                $('#summernote').summernote({
+                    placeholder: '在此編輯內容...',
+                    height: 300, // 設定編輯器的高度
+                    toolbar: [
+                        ['style', ['bold', 'italic', 'underline', 'clear']], // 樣式
+                        ['font', ['strikethrough', 'superscript', 'subscript']], // 字體
+                        ['para', ['ul', 'ol', 'paragraph']], // 段落
+                        ['color', ['color']], // 增加字體顏色選項
+                        ['table', ['table']], // 添加表格按钮
+                    ]
+                });
+            });
+        });
+
+
+        //作廢按鈕
+
+        $("#btnInvalid").click(function () {
+
+            let userConfirmed = confirm("是否作廢?");
+            if (!userConfirmed) return;
+
+
+            let id = $("#ModifyFrom_FormId").val();
+
+            let formData = new FormData();
+            formData.append("id", id);
+
+            $.ajax({
+                'url': `/ModifyForm/InValid`,
+                'type': 'POST',
+                'contentType': false, //required
+                'processData': false, // required
+                'mimeType': 'multipart/form-data',
+                'data': formData,
+                'dataType': 'json'
+            }).done(function (response) {
+                console.log(response);
+                if (response) {
+                    alert(response.message);
+                    window.location.href = "/QueryForms/Index/";
+                } else {
+                    alert("作廢成功，但未收到預期回應!");
+                }
+            }).fail(function (response) {
+                alert("作廢失敗，請重新嘗試或洽管理員!")
+            })
+
+        });
+
+
+        $("#btnEdit").click(function () {
+            let userConfirmed = confirm("是否送出?");
+            if (!userConfirmed) return;
+
+            //檢查資料
+            // let content = $("#ModifyFrom_Content").val();
+            let content = $('#summernote').summernote('code');
+            let tel = $("#ModifyFrom_Tel").val();
+            let endDate = $("#endDatePicker").val();
+            // let file = $("#file").get(0).files[0];
+            let files = $("#file").get(0).files; //多檔案
+            let id = $("#ModifyFrom_FormId").val();
+            let now = new Date(); //現在時間
+            now.setDate(now.getDate() - 1);
+            let inputDate = new Date(endDate); //輸入時間
+
+            if (tel == "") {
+                alert("電話不可為空");
+                return;
+            }
+            if (content == "") {
+                alert("需求內容不可為空");
+                return;
+            }
+
+            if (endDate == "") {
+                alert("希望完成日期不可為空");
+                return;
+            }
+
+            if (inputDate < now) {
+                alert("希望完成日期不可早於今日");
+                return;
+            }
+
+            let formData = new FormData();
+            formData.append('content', content);
+            formData.append('tel', tel);
+            formData.append('endDate', endDate);
+            formData.append('id', id);
+
+            //單檔案
+            // if (file) { formData.append('file', file) };
+
+            //多檔案
+            if (files) {
+                for (let i = 0; i < files.length; i++) {
+                    formData.append('Files', files[i]);
+                }
+            }
+
+
+            fetch('/ModifyForm/Edit',
+                {
+                    method: 'POST',
+                    body: formData,
+
+                }).then(response => {
+                    if (response.ok) {
+                        return response.json(); // 將回應解析為 JSON
+                    } else {
+                        throw new Error('送出失敗'); // 拋出錯誤以進行錯誤處理
+                    }
+                })
+                .then(data => {
+                    // 成功的情況下顯示返回的 message 並跳轉
+                    window.alert(data.message); // 假設 message 在返回的 JSON 中
+                    if (data.message == "修改成功") {
+                        window.location.href = "/QueryForms/Index/";
+                    }
+
+                })
+                .catch(error => {
+                    // 處理錯誤情況
+                    window.alert(error.message || '送出失敗');
+                });
+
+
+            // $.ajax({
+            //     'url': `/ModifyForm/Upload`,
+            //     'type': 'POST',
+            //     'contentType': false, //required
+            //     'processData': false, // required
+            //     'mimeType': 'multipart/form-data',
+            //     'data': formData
+            // }).done(function (response) {
+            //     console.log(response)
+            // }).fail(function (response) {
+            //     console.log('api_post_user: Fail ' + response.responseText)
+            // })
+        });
+
+
+        // //min日期
+        let today = new Date().toISOString().split('T')[0];
+         $('#endDatePicker').attr('min', today);
+
+    </script>
+}
+

@@ -1,0 +1,679 @@
+﻿@model BPMPlus.ViewModels.FormReviewViewModel
+
+
+
+
+@section Style
+{
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+    
+    <style>
+        .wrapper {
+            position: relative;
+            background-image: linear-gradient(120deg, #ffffff 0%, #0079ff2e 100%);
+        }
+
+        .content-wrapper {
+            background: rgb(255 255 255 / 0%);
+        }
+
+        #formArea{
+            box-shadow: 0 0 1px rgba(0, 0, 0, .125), 0 1px 3px rgba(0, 0, 0, .2);
+        }
+
+        .txtTitle {
+            color: #007bff;
+            font-weight: bold;
+            margin:20px;
+            margin-bottom: 30px;
+        }
+
+        form {
+            background-color: white;
+            padding: 20px;
+            margin: 15px 20px;
+            border-radius: 0.25rem;
+        }
+
+        .form-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .form-group {
+            flex: 1;
+            margin-right: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        label {
+            margin-bottom: 5px;
+        }
+
+        .formBackground input[type="text"], textarea {
+            width: 95%;
+            padding: 10px;
+            background-color: whitesmoke;
+        }
+
+        textarea {
+            width: 100%;
+            height: 200px;
+            border-radius: 5px;
+            background-color: white;
+            border: 1px solid #c2c2c2;
+            padding:5px;
+            word-break: break-all;
+            max-height: 350px;
+            min-height: 200px;
+        }
+        
+        .borderLine{
+            width: 100%;
+            border: 1px solid #ced4da;
+            margin-top: 20px;
+        }
+
+        .processRecord{
+            margin-top: 20px;
+        }
+
+        .processRecord button {
+                margin: 5px 0;
+            }
+
+        .formRecord {
+            margin-top: 20px;
+        }
+
+        .fileDownloadGroup{
+            margin-top: 20px;
+        }
+
+        .formRecord .table-container {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .formRecord table {
+            width: 100%;
+            table-layout: fixed;
+            word-break: break-all;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .formRecord thead th {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        /*     border-bottom: 2px solid #ccc; */
+        }
+
+        .formRecord tbody tr:nth-of-type(even) {
+            background-color: #ccc;
+        }
+
+        #formArea .formRecord thead, th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+
+        button {
+            padding: 5px 10px;
+            margin-right: 5px;
+        }
+
+        .resultArea{
+            display:flex;
+            justify-content: center;
+            align-items:center;
+            margin: 10px;
+        }
+
+       .resultArea .reviewResult .reviewTxt {
+           display: block;
+           text-align: center;
+           color: red;
+           font-size: x-large;
+       }
+
+        .resultArea  label {
+            margin : 5px 5px;
+        }
+
+        .submitBtn{
+            display: block;
+            text-align: center;
+            margin-bottom:10px;
+        }
+
+        input.btn.btn-danger {
+            width: 15%;
+        }
+
+        .result{
+            margin-top: 20px;
+        }
+
+        .result .textContent {
+            background-color:whitesmoke;
+            width: 100%;
+            max-height: 500px;
+            min-height: 200px;
+            overflow-y: visible;
+            overflow-x: auto;
+            padding: 10px;
+            background-color: white;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            word-break: break-all;
+        }
+
+        .form-group input#Files {
+            width:100%;
+        }
+
+        .checkIcon{
+            color : green;
+        }
+
+        .falseIcon{
+            color: red;
+        }
+    </style>
+}
+
+
+<div id="fullPage">
+    <!--  title  -->
+    <div class="title">
+        <h2 class="txtTitle">審核工單</h2>
+    </div>
+
+    <form id="formArea" asp-controller="FormReview" method="post" asp-action="Create" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+            <!-- 工單區域 -->
+            <div class="formBackground">
+                <div class="row">
+                    <div class="col-6 form-label form-group-centered">
+                        <input type="hidden" asp-for="@Model.UserId" />
+                        <input type="hidden" asp-for="@Model.ResultId" />
+                        <input type="hidden" asp-for="@Model.DepartmentId" />
+                        <input type="hidden" asp-for="@Model.UserActivityId" />
+                        <input type="hidden" asp-for="@Model.ProcessNodeId" />
+                        <label>工單編號</label>
+                        <input asp-for="@Model.FormId" type="text" class="form-control" value="@Model.FormId" readonly />
+                    </div>
+                    <div class="col-6 form-label form-group-centered">
+                        <label>建立日期</label>
+                        <input asp-for="@Model.Date" type="text" class="form-control" value="@Model.Date.ToLocalTime().ToString(" yyyy-MM-dd")" readonly />
+                    </div>
+                    <div class="col-6 form-label form-group-centered">
+                        <label>需求類別</label>
+                        <input asp-for="@Model.CategoryDescription" type="text" class="form-control" value="@Model.CategoryDescription" readonly />
+                    </div>
+                    <div class="col-6 form-label form-group-centered">
+                        <label>處理狀態</label>
+                        <input asp-for="@Model.CurrentResultsDescription" type="text" class="form-control" value="@Model.CurrentResultsDescription" readonly />
+                    </div>
+                    <div class="col-6 form-label form-group-centered">
+                        <label>需求部門</label>
+                        <input asp-for="@Model.DepartmentName" type="text" class="form-control" value="@Model.DepartmentName" readonly />
+                    </div>
+                    <div class="col-6 form-label form-group-centered">
+                        <label>指派人員
+                            <i class="fa-solid fa-spinner fa-spin loadIcon" hidden></i>
+                            <i class="fa-solid fa-check checkIcon" hidden></i>
+                            <i class="fa-solid fa-xmark falseIcon" hidden></i>
+                            <span class="alertAssignTxt" hidden> 請輸入同部門, 權限之人員</span>
+                        </label>
+                    
+                        <input asp-for="@Model.AssginEmployee" type="text" class="assignEmp form-control" value="@Model.AssginEmployee" readonly />
+                    </div>
+                    <div class="col-6 form-label form-group-centered">
+                        <label>需求員工</label>
+                        <input asp-for="@Model.NeedEmployees" type="text" class="form-control" value="@Model.NeedEmployees" readonly />
+                    </div>
+                    <div class="col-6 form-label form-group-centered">
+                        <label>希望完成日期</label>
+                    <input asp-for="@Model.HopeFinishDate" type="text" class="form-control" value="@Model.HopeFinishDate.AddHours(8).ToString(" yyyy-MM-dd")" readonly />
+                    </div>
+                    <div class="col-6 form-label form-group-centered">
+                        <label>所屬專案</label>
+                        <input asp-for="@Model.BelongProjects" type="text" class="form-control" value="@Model.BelongProjects" readonly />
+                    </div>
+                    <div class="col-6 form-label form-group-centered">
+                        <label>預估工時</label>
+                        <input asp-for="@Model.EstimatedTime" type="text" class="EstimatedTime form-control" value="@Model.EstimatedTime" readonly />
+                    </div>
+                </div>
+            </div>
+
+            <div class="borderLine"></div>
+
+            <!--  流程節點進度  -->
+            <div id="formBackground btnArea">
+                <div class="processRecord">
+                    <label>流程進度</label>
+                    <div>
+                        @foreach (var activity in Model.FormProcessFlow)
+                        {
+                            if (activity.IsHightLight == true)
+                            {
+                                <button type="button" class="btn btn-sm btn-danger btns">@activity.UserActivityIdDescription</button>
+                            }
+                            else
+                            {
+                                <button type="button" class="btn btn-sm btn-primary btns">@activity.UserActivityIdDescription</button>
+                            }
+                        }
+
+                    </div>
+            </div>
+
+                <div class="borderLine"></div>
+
+            <!--  工單處理紀錄  -->
+            <div class="formRecord">
+                <label>處理紀錄</label>
+                    <div class="table-container">
+                        <table class="table table-hover table-bordered ">
+                            <thead>
+                                <tr>
+                                    <th>時間</th>
+                                    <th>處理狀態</th>
+                                    <th>處理人員</th>
+                                    <th>出示意見</th>
+                                    <th>審核結果</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.FormRecordList)
+                                {
+                                    <tr>
+                                        <td>@item.Date.AddHours(8)</td>
+                                        <td>@item.UserActivityDes</td>
+                                        <td>@item.UserName</td>
+                                        <td>@item.Remark</td>
+                                        <td>@item.ResultDes</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+            </div>
+
+            <div class="borderLine"></div>
+
+            <!-- 需求內容/附件/出示意見 -->
+            <!-- 需求內容 -->
+            <div class="result">
+                <label class="noteContent">需求內容</label><br>
+                    <div asp-for="@Model.Content" class="textContent form-control" readonly>@Html.Raw(Model.Content)</div>
+            </div>
+
+            <div class="borderLine"></div>
+
+            <!-- 附件上傳/下載 -->
+            <div class="fileDownloadGroup">
+                <input type="hidden" name="id" value="@Model.FormId" />
+                    <label>附件</label>
+                <div class="form-group">
+                        <div>
+                            <input asp-for="@Model.Files" type="file" class="form-control" multiple />
+                        </div>
+                        <button id="btnDownload" class="button btn btn-primary" type="button">
+                            <i class="fa-solid fa-file-arrow-down"></i>  附件下載
+                        </button>
+                </div>
+            </div>
+
+                <div class="borderLine"></div>
+
+            <div class="result">
+                <label class="control-label">出示意見
+                    <i class="fa-solid fa-spinner fa-spin loadIconRemark" hidden></i>
+                    <i class="fa-solid fa-check checkIconRemark" hidden></i>
+                    <i class="fa-solid fa-xmark falseIconRemark" hidden></i>
+                    <span class="alertRemarkTxt" hidden> 字數超出上限</span>
+                </label>
+                <br />
+                <div class="txtInput">
+                    <div>
+                        <textarea class="ManagerOpinion" asp-for="@Model.Remark" placeholder="請輸入反饋~ (文字上限300字)">
+                            @Model.Remark
+                            </textarea>
+                    </div>
+                </div>
+
+                <div class="borderLine"></div>
+
+                <div class="resultArea">
+                    <div class="reviewResult" >
+                        <label class="reviewTxt">審核結果</label>
+                        <label><input name="reviewResult" type="radio" value="reject" class="rejectBtn" />退回</label>
+                        <label><input name="reviewResult" type="radio" value="approve" class="approveBtn" /> 核准</label>
+                    </div>
+                </div>
+                 
+                <div class="submitBtn">
+                        <input type="submit" class="btn btn-danger" value="送出" />
+                </div>
+
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts
+{
+    <script src="~/AdminLTE/plugins/jquery/jquery.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="~/AdminLTE/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- Select2 -->
+    <script src="~/AdminLTE/plugins/select2/js/select2.full.min.js"></script>
+    <!-- Bootstrap4 Duallistbox -->
+
+
+    <script src="~/AdminLTE/plugins/inputmask/jquery.inputmask.min.js"></script>
+    <!-- date-range-picker -->
+
+
+    <script src="~/AdminLTE/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+
+    
+    <!-- AdminLTE for demo purposes -->
+    <script src="~/AdminLTE/dist/js/demo.js"></script>
+    <script>
+        // 一進到審核頁發請求詢問身分是否為處理方一級主管or 處理人員 or 驗收方, 是的話移除唯讀, 提供輸入指派者 or 處理人員輸入預估工時
+        document.addEventListener('DOMContentLoaded', async function () {
+            let formId = '@Model.FormId';
+            let needEmp = document.querySelector(".assignEmp");
+            let formValid = document.getElementById("formArea");
+            let checkEstimatedTime = document.querySelector(".EstimatedTime");
+            let checkIcon = document.querySelector(".checkIcon");
+            let falseIcon = document.querySelector(".falseIcon");
+            let loadIcon = document.querySelector(".loadIcon");
+            let rejectBtn = document.querySelector(".rejectBtn");
+            let approveBtn = document.querySelector(".approveBtn");
+            let alertAssignTxt = document.querySelector(".alertAssignTxt");
+            let userPermit;
+
+            // 針對有指派人員欄位權限者 , 輸入時發送請求確認人員是否符合資格
+            async function validateEmp(empName) {
+                let response = await fetch(`/FormReview/AssignEmployee?empName=${empName}`, {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                let result = await response.json();
+                return result;
+            }
+
+
+            // 發請求確認當前user 身分權限 回應相對應功能
+            fetch(`/FormReview/CheckEmployeeAuthorize/?id=${formId}`, {
+                method: "GET"
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === true) {
+                        alertAssignTxt.style = "color : red ; font-weight: bold;";
+                         function handleRejectClick() {
+                                needEmp.setAttribute("readonly", "readonly");
+                                needEmp.value = "退回時無需填寫人員";
+                                needEmp.style = "color:red;"
+                                checkIcon.setAttribute("hidden", "hidden");
+                                falseIcon.setAttribute("hidden", "hidden");
+                                loadIcon.setAttribute("hidden", "hidden");
+                                alertAssignTxt.setAttribute("hidden", "hidden");
+                            }
+
+                         function handleApproveClick() {
+                                needEmp.removeAttribute("readonly");
+                                if (needEmp.value === "退回時無需填寫人員"){
+                                    needEmp.style = "color:black;"
+                                    needEmp.value = "";
+                                }
+                            }
+
+                        if (data.userPermit === "other") {
+                            needEmp.setAttribute("readonly", "readonly");
+                            checkEstimatedTime.setAttribute("readonly", "readonly");
+                            checkEstimatedTime.value = "";
+                            needEmp.value = "";
+                            rejectBtn.addEventListener("click", handleRejectClick);
+                            approveBtn.addEventListener("click", function () {
+                                if (needEmp.value === "退回時無需填寫人員") {
+                                    needEmp.style = "color:black;"
+                                    needEmp.value = "";
+                                }
+                            });
+                        }
+                        else if (data.userPermit === "07") {
+                            needEmp.value = data.handler;
+                            needEmp.style = "background-color:white;"
+                            
+
+                            rejectBtn.addEventListener("click", handleRejectClick);
+                            approveBtn.addEventListener("click", handleApproveClick);
+
+                            needEmp.removeAttribute("readonly");
+                            checkEstimatedTime.setAttribute("readonly", "readonly");
+                            checkEstimatedTime.value = "";
+
+                            needEmp.addEventListener("input", function (event) {
+                                clearTimeout(this.inputTimer);
+                                let enterEmp = needEmp.value.trim();
+
+                                if (enterEmp.length > 0) {
+                                        checkIcon.setAttribute("hidden", "hidden");
+                                        falseIcon.setAttribute("hidden", "hidden");
+                                        loadIcon.setAttribute("hidden", "hidden");
+                                        alertAssignTxt.setAttribute("hidden", "hidden");
+                                        loadIcon.removeAttribute("hidden");
+
+                                    this.inputTimer = setTimeout(async () => {
+                                        let result = await validateEmp(enterEmp);
+                                        loadIcon.setAttribute("hidden", "hidden");
+
+                                        if (result.status) {
+                                            checkIcon.removeAttribute("hidden");
+                                        } else {
+                                            falseIcon.removeAttribute("hidden");
+                                            alertAssignTxt.removeAttribute("hidden", "hidden");
+                                        }
+                                    }, 800);
+                                }
+                                else{
+                                    checkIcon.setAttribute("hidden", "hidden");
+                                    falseIcon.setAttribute("hidden", "hidden");
+                                    loadIcon.setAttribute("hidden", "hidden");
+                                    alertAssignTxt.setAttribute("hidden", "hidden");
+                                }
+                            });
+                        }
+                        else if (data.userPermit === "08") {
+                            needEmp.value = data.handler;
+                            needEmp.setAttribute("readonly", "readonly");
+                            checkEstimatedTime.removeAttribute("readonly");
+                            checkEstimatedTime.style = "background-color:white;"
+
+                            if (data.time != null) {
+                                checkEstimatedTime.value = data.time;
+                            }
+                            else {
+                                checkEstimatedTime.value =  "";
+                            }
+                        }
+                        else if (data.userPermit === "09") {
+                            needEmp.value = data.handler;
+                            needEmp.setAttribute("readonly", "readonly");
+                            checkEstimatedTime.setAttribute("readonly", "readonly");
+
+                            if (data.time != null) {
+                                checkEstimatedTime.value = data.time;
+                            }
+                            else {
+                                checkEstimatedTime.value = "";
+                            }
+                        }
+
+                        // submit驗證
+                        formValid.addEventListener("submit", async function (event) {
+                            event.preventDefault();
+                            let rejectBtn = document.querySelector('input[name="reviewResult"][value="reject"]').checked;
+                            let approveBtn = document.querySelector('input[name="reviewResult"][value="approve"]').checked;
+                            let enterEmp = needEmp.value.trim();
+
+                            let errorMessages = [];
+
+                            if (!rejectBtn && !approveBtn) {
+                                errorMessages.push("請選擇「核准」或「退回」");
+                            }
+
+                            if (data.userPermit === "07" && approveBtn && enterEmp === "") {
+                                errorMessages.push("請填寫指派人員");
+                            }
+
+                            if (errorMessages.length > 0) {
+                                alert(errorMessages.join("，並且"));
+                                return;
+                            }
+
+                            if (data.userPermit === "07" && approveBtn && enterEmp !== "") {
+                                let result = await validateEmp(enterEmp);
+                                if (!result.status) {
+                                    needEmp.scrollIntoView({ behavior: "smooth", block: "center" });
+                                    // alert("請填寫正確的指派人員！");
+                                    return;
+                                }
+                            }
+
+                            if (confirm("確定要送出嗎？")) {
+                                this.submit();
+                            }
+                        });
+                    }
+                    else {
+                        needEmp.setAttribute("readonly", "readonly");
+                        checkEstimatedTime.setAttribute("readonly", "readonly");
+                        alert("您沒有權限進行此操作。");
+                    }
+                })
+                .catch(err => {
+                    console.error("Error:", err);
+                    alert("發生錯誤：" + JSON.stringify(err));
+                });
+        });
+
+        // 檔案上傳
+     document.querySelector('input[type="file"]').addEventListener('change', function(e) {
+        const maxSize = 5 * 1024 * 1024; 
+        for (let i = 0; i < this.files.length; i++) {
+            if (this.files[i].size > maxSize) {
+                alert("超過大小限制 5 MB");
+                this.value = ""; 
+                return;
+            }
+        }
+        });
+
+        // 檔案下載
+        document.getElementById("btnDownload").addEventListener("click", function () {
+
+            let userConfirmed = confirm("是否下載?");
+            if (!userConfirmed) return;
+
+            let id = '@Model.FormId';
+
+            let formData = new FormData();
+            formData.append("id", id);
+
+            fetch('/FormReview/Download', {
+                method: 'POST',
+                body: formData,
+            }).then(response => {
+                // 檢查是否成功
+                if (!response.ok) {
+                    throw new Error('下載失敗');
+                }
+
+                // 嘗試獲取回應的內容類型
+                let contentType = response.headers.get("content-type");
+
+                // 如果伺服器返回的是文本
+                if (contentType && contentType.includes("text")) {
+                    return response.text().then(text => {
+                        alert(text);  // 例如：顯示 "無檔案可下載"
+                    });
+                }
+
+                // 否則繼續處理檔案下載
+                return response.blob().then(blob => {
+                    let file = window.URL.createObjectURL(blob);
+                    let link = document.createElement('a');
+                    link.href = file;
+                    link.download = 'download.zip';  // 可以更改為你的文件名
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    alert("下載成功");
+                });
+            }).catch(error => {
+                alert(error.message);
+            });
+        })
+
+        let txtLimitDOM = document.querySelector(".ManagerOpinion");
+
+        // 隱藏送出按鈕方法
+        function disabledSubmit (){
+            let submitBtn = document.querySelector(".submitBtn input");
+            let alertRemarkTxt = document.querySelector(".alertRemarkTxt");
+            let txtLimit = txtLimitDOM.value;
+            let checkIcon = document.querySelector(".checkIconRemark");
+            let falseIcon = document.querySelector(".falseIconRemark");
+            let loadIcon = document.querySelector(".loadIconRemark");
+
+            checkIcon.setAttribute("hidden", "hidden");
+            falseIcon.setAttribute("hidden", "hidden");
+            loadIcon.setAttribute("hidden", "hidden");
+
+            if (txtLimit.length > 300) {
+                loadIcon.removeAttribute("hidden");
+                setTimeout(() => {
+                    loadIcon.setAttribute("hidden", "hidden");
+                    falseIcon.removeAttribute("hidden");
+                    falseIcon.style = "color:red;";
+                    alertRemarkTxt.removeAttribute("hidden");
+                    alertRemarkTxt.style = "color:red;font-weight:bold;";
+                    submitBtn.setAttribute("disabled", "true");
+                }, 800);
+            }
+            else {
+                submitBtn.removeAttribute("disabled", "false");
+                alertRemarkTxt.setAttribute("hidden", "hidden");
+                falseIcon.setAttribute("hidden", "hidden");
+                loadIcon.setAttribute("hidden", "hidden");
+            }
+        }
+        //啟用textarea監聽並加入防抖
+        txtLimitDOM.addEventListener("input", function (event) {
+            disabledSubmit();
+
+        });
+
+    </script>
+}
+
+
+
+

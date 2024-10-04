@@ -1,0 +1,464 @@
+﻿@model IEnumerable<BPMPlus.Models.Form>
+@section Style {
+    <style>
+        .content-wrapper {
+            background-image: linear-gradient(120deg, #ffffff 0%, #0079ff2e 100%);
+        }
+
+        #mainWrapper {
+            background-color: #cfecff;
+        }
+
+        .connectedSortable{
+            padding:20px;
+        }
+
+        #mainpart {
+            padding: 30px 40px;
+        }
+
+        .selectbtn {
+            color: black;
+            font-weight: bold;
+        }
+
+        .content .connectedSortable option {
+            background-color: white;
+            color: #458bfc;
+            font-weight: bold;
+        }
+
+        .clearfix button {
+            background-color: #458bfc;
+        }
+
+        .table-bordered {
+            text-align: center;
+        }
+
+        ::placeholder {
+            color: black;
+        }
+
+        .txtTitle{
+            color: rgba(0, 81, 255, 0.884);
+            font-weight:bold;
+            margin-bottom: 30px;
+        }
+
+        .dataTables_filter input::placeholder{
+            color: black;
+        }
+        .inputb{
+            border: #ced4da 1px solid;
+        }
+        
+
+    </style>
+    <link rel="stylesheet" href="~/font-awesome/css/all.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css" />
+}
+
+
+<div class="container-fluid">
+    <div class="row">
+        <section class="connectedSortable">
+            <h2 class="txtTitle">查詢工單</h2>
+            <div class="accordion" id="accordionExample">
+                <div id="mainpart" class="card">
+                    <div class="row justify-content-between mb-3">
+
+
+                        <div class="col-2 d-flex justify-content-center">
+                            <input type="text" class="btn inputb fID" style="width:80%;border:#ced4da 1px solid" placeholder="請填工單編號" />
+                        </div>
+                        <div class="col-3 d-flex justify-content-center">
+                            <select class="form-select selectbtn selectUserName" asp-items="ViewBag.UserId">
+                                <option value=""  disabled selected>申請者</option>
+                            </select>
+                        </div>
+                        <div class="col-3 d-flex justify-content-center">
+                            <select class="form-select selectbtn selectCategoryId" asp-items="ViewBag.CategoryId">
+                                <option value="" disabled selected>需求類別</option>
+                            </select>
+                        </div>
+
+
+                        <div class="col-2 d-flex justify-content-center">
+                            <select class="form-select selectbtn selectProjectId" asp-items="ViewBag.ProjectId">
+                                <option value="" disabled selected>專案名稱</option>
+                            </select>
+                        </div>
+
+                        <div class="col-2 d-flex justify-content-center">
+                            <input type="date" class="btn inputb createddate" style="outline:none" min="2024-01-01" />
+                        </div>
+                    </div>
+                    <table class="table table-bordered" >
+                        <thead>
+                            <tr>
+                                <th scope="col">單號</th>
+                                <th scope="col">部門</th>
+                                <th scope="col">姓名</th>
+                                <th scope="col">需求項目類別</th>
+                                <th scope="col">專案名稱</th>
+                                <th scope="col">狀態</th>
+                                <th scope="col">建立時間</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @foreach (var item in Model)
+                            {
+
+                                <tr>
+                                    <td>
+                                        <a asp-area="" asp-controller="FormDetails" asp-action="Index" asp-route-id="@item.FormId">
+                                            @Html.DisplayFor(modelItem => item.FormId)
+                                        </a>
+
+                                    </td>
+                                    <td>
+                                        @{
+                                            var dapartmentname = ViewBag.Departments[item.DepartmentId];
+
+                                        }
+                                        @dapartmentname
+                                    </td>
+                                    <td>
+                                        @{
+                                            var userName = ViewBag.UserName[item.UserId];
+
+                                        }
+                                        @userName
+                                    </td>
+                                    <td>
+                                        @{
+                                            var category = ViewBag.category[item.CategoryId];
+
+                                        }
+                                        @category
+                                    </td>
+                                    <td>
+                                        @{
+                                            string projectName;
+                                            if(item.ProjectId == null)
+                                            {
+                                                projectName = null;
+                                            }
+                                            else projectName = ViewBag.ProjectName[item.ProjectId];
+
+                                        }
+                                        @projectName
+                                    </td>
+                                    <td>
+                                        @{
+                                            var process = ViewBag.process[item.ProcessNodeId];
+                                            var situation = ViewBag.situation[process];
+
+                                        }
+                                        @situation
+                                    </td>
+                                    <td>
+                                        @item.Date.AddHours(8).ToString("yyyy-MM-dd HH:mm")
+                                    </td>
+
+
+
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+
+                </div>
+
+
+            </div>
+        </section>
+    </div>
+
+</div>
+
+<!-- /.container-fluid -->
+@section Scripts {
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('table').DataTable({
+                paging: true,
+                ordering: true,
+                "order": [[0, 'desc']],
+                "language": {
+                    "url": '//cdn.datatables.net/plug-ins/2.1.6/i18n/zh-HANT.json'
+                }
+            });
+        });
+        //透過表單編號篩選
+        $(".fID").change(function (e) {
+            var inputId = $(this).val();
+            $(".fID").val(""); //清除內部值
+            $.ajax({
+                url: '@Url.Action("SearchByFormId", "QueryForms")',
+                type: 'GET',
+                data: { formId: inputId },
+                success: function (response ) {
+                    if (response.data) {
+                        var item = response.data;
+                        console.log(item);
+                        $('table').DataTable().destroy();
+                        //重新加入新的標籤
+                        // $("tbody").empty();
+                         $("tbody").empty();
+                        var newRow = `<tr>
+                                                    <td>
+                                                        <a href="/FormDetails/Index/${item.formId}">
+                                                            ${item.formId}
+                                                        </a>
+                                                    </td>
+                                                    <td>${item.departmentName}</td>
+                                                    <td>${item.userName}</td>
+                                                    <td>${item.categoryDescription}</td>
+                                                     <td>${item.projectName || ""}</td>
+                                                    <td>${item.situation}</td>
+                                                    <td>${item.createdTime}</td>
+                                                </tr>`;
+                        $("tbody").append(newRow);
+                        $(".selectUserName").val("");
+                        $(".selectCategoryId").val("");
+                        $(".selectProjectId").val("");
+                        $(".createddate").val("");
+                        $('table').DataTable({
+                            paging: true,
+                            ordering: true,
+                            "language": {
+                                "url": '//cdn.datatables.net/plug-ins/2.1.6/i18n/zh-HANT.json'
+                            }
+                        });
+
+                    } else {
+                        alert(response.message || "連接失敗，請重新輸入");
+                        $(".selectUserName").val("");
+                        $(".selectCategoryId").val("");
+                        $(".createddate").val("");
+                        $(".selectProjectId").val("");
+                    }
+                },
+            });
+        });
+        //透過UserId篩選
+        $(".selectUserName").change(function (e) {
+            var value = this.value;
+            $.ajax({
+                url: '@Url.Action("UserName", "QueryForms")',
+                type: 'GET',
+                data: { userId: value },
+                success: function (response) {
+                    if (response.success) {
+                        let model = response.data;
+                        $('table').DataTable().destroy();
+                        $("tbody").empty();
+                        model.findForm.forEach(function (item) {
+                            var newRow = `<tr>
+                                                        <td>
+                                                            <a href="/FormDetails/Index/${item.formId}">
+                                                                ${item.formId}
+                                                            </a>
+                                                        </td>
+                                                        <td>${model.departments[item.departmentId]}</td>
+                                                        <td>${model.userName[item.userId]}</td>
+                                                        <td>${model.category[item.categoryId]}</td>
+                                                                <td>${model.projectName[item.projectId] || ""}</td>
+                                                        <td>${model.userActivity[model.processNodes[item.processNodeId]]}</td>
+                                                        <td>${item.createdTime}</td>
+                                                    </tr>`;
+                            $("tbody").append(newRow);
+                            $(".selectCategoryId").val("");
+                            $(".selectProjectId").val("");
+                            $(".createddate").val("");
+                        });
+                        $('table').DataTable({
+                            paging: true,
+                            ordering: true,
+                            "language": {
+                                "url": '//cdn.datatables.net/plug-ins/2.1.6/i18n/zh-HANT.json'
+                            }
+                        });
+
+                    } else {
+                        alert(response.message);
+                        $(".selectCategoryId").val("");
+                        $(".selectProjectId").val("");
+                        $(".createddate").val("");
+                    }
+
+                },
+                error: function (response) {
+                    alert("搜尋失敗")
+                }
+            })
+
+        });
+        //透過categoryId 篩選
+        $(".selectCategoryId").change(function () {
+            var value = this.value;
+            $.ajax({
+                url: '@Url.Action("Category", "QueryForms")',
+                type: 'GET',
+                data: { categoryId: value },
+                success: function (response) {
+                    if (response.success) {
+                        let model = response.data;
+                        $('table').DataTable().destroy();
+                        $("tbody").empty();
+                        model.findForm.forEach(function (item) {
+                            var newRow = `<tr>
+                                                                <td>
+                                                                    <a href="/FormDetails/Index/${item.formId}">
+                                                                        ${item.formId}
+                                                                    </a>
+                                                                </td>
+                                                                <td>${model.departments[item.departmentId]}</td>
+                                                                <td>${model.userName[item.userId]}</td>
+                                                                <td>${model.category[item.categoryId]}</td>
+                                                                        <td>${model.projectName[item.projectId] || ""}</td>
+                                                                <td>${model.userActivity[model.processNodes[item.processNodeId]]}</td>
+                                                                <td>${item.createdTime}</td>
+                                                            </tr>`;
+                            $("tbody").append(newRow);
+                            $(".selectUserName").val("");
+                            $(".selectProjectId").val("");
+                            $(".createddate").val("");
+                        });
+                        $('table').DataTable({
+                            paging: true,
+                            ordering: true,
+                            "language": {
+                                "url": '//cdn.datatables.net/plug-ins/2.1.6/i18n/zh-HANT.json'
+                            }
+                        });
+                    } else {
+                        alert(response.message);
+                        $(".selectUserName").val("");
+                        $(".selectProjectId").val("");
+                        $(".createddate").val("");
+                    }
+
+                },
+                error: function (response) {
+                    alert("搜尋失敗")
+                }
+            })
+
+        });
+        //透過projectId 篩選
+        $(".selectProjectId").change(function () {
+            var value = this.value;
+            $.ajax({
+                url: '@Url.Action("Project", "QueryForms")',
+                type: 'Get',
+                data: { projectId: value },
+                success: function (response) {
+                    if (response.success) {
+                        let model = response.data;
+                        $('table').DataTable().destroy();
+                        $("tbody").empty();
+                        model.findForm.forEach(function (item) {
+                            var newRow = `<tr>
+                                                                        <td>
+                                                                            <a href="/FormDetails/Index/${item.formId}">
+                                                                                ${item.formId}
+                                                                            </a>
+                                                                        </td>
+                                                                        <td>${model.departments[item.departmentId]}</td>
+                                                                        <td>${model.userName[item.userId]}</td>
+                                                                        <td>${model.category[item.categoryId]}</td>
+                                                                                <td>${model.projectName[item.projectId] || ""}</td>
+                                                                        <td>${model.userActivity[model.processNodes[item.processNodeId]]}</td>
+                                                                        <td>${item.createdTime}</td>
+                                                                    </tr>`;
+                            $("tbody").append(newRow);
+                            $(".selectUserName").val("");
+                            $(".selectCategoryId").val("");
+                            $(".createddate").val("");
+                        });
+                        $('table').DataTable({
+                            paging: true,
+                            ordering: true,
+                            "language": {
+                                "url": '//cdn.datatables.net/plug-ins/2.1.6/i18n/zh-HANT.json'
+                            }
+                        });
+
+                    } else {
+                        alert(response.message);
+                        $(".selectUserName").val("");
+                        $(".selectCategoryId").val("");
+                        $(".createddate").val("");
+                    }
+
+                },
+                error: function (response) {
+                    alert("搜尋失敗")
+                }
+            })
+
+        });
+
+        //透過日期篩選
+        $(".createddate").change(function () {
+            var inputId = $(this).val();
+            $.ajax({
+                url: '@Url.Action("CreatDate", "QueryForms")',
+                type: 'GET',
+                data: { date: inputId },
+                success: function (response) {
+                    if (response.data) {
+                        var model = response.data;
+                        $('table').DataTable().destroy();
+                        $("tbody").empty();
+                        model.findForm.forEach(function (item) {
+                            var newRow = `<tr>
+                                                                                <td>
+                                                                                    <a href="/FormDetails/Index/${item.formId}">
+                                                                                        ${item.formId}
+                                                                                    </a>
+                                                                                </td>
+                                                                                <td>${model.departments[item.departmentId]}</td>
+                                                                                <td>${model.userName[item.userId]}</td>
+                                                                                <td>${model.category[item.categoryId]}</td>
+                                                                                <td>${model.projectName[item.projectId] || ""}</td>
+                                                                                <td>${model.userActivity[model.processNodes[item.processNodeId]]}</td>
+                                                                                        <td>${item.createdTime}</td>
+                                                                            </tr>`;
+                            $("tbody").append(newRow);
+                            $(".createddate").val("");
+                            $(".selectUserName").val("");
+                            $(".selectCategoryId").val("");
+                            $(".selectProjectId").val("");
+
+                        });
+                        $('table').DataTable({
+                            paging: true,
+                            ordering: true,
+                            "language": {
+                                "url": '//cdn.datatables.net/plug-ins/2.1.6/i18n/zh-HANT.json'
+                            }
+                        });
+                    } else {
+                        alert(response.message || "連接失敗，請重新輸入");
+                        $(".createddate").val("");
+                        $(".selectUserName").val("");
+                        $(".selectCategoryId").val("");
+                        $(".selectProjectId").val("");
+                    }
+                },
+            });
+
+
+
+        });
+
+
+    </script>
+}

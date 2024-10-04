@@ -1,0 +1,41 @@
+﻿@model BPMPlus.ViewModels.Project.ProjectDetailsViewModel
+@{
+    ViewData["Title"] = "Gantt Chart";
+}
+
+<link rel="stylesheet" href="~/frappe-gantt/style.css" />
+
+<div id="gantt"></div>
+
+<script src="~/frappe-gantt/frappe-gantt.js"></script>
+
+<script>
+    var formGanttDataList = @Html.Raw(Json.Serialize(Model.ProjectChartViewModel.FormGanttDataList))
+        var projectGanttDataList = @Html.Raw(Json.Serialize(Model.ProjectChartViewModel.ProjectGanttDataList))
+    var tasks = [];
+    for (var i = 0; i < formGanttDataList.length; ++i) {
+        console.log(formGanttDataList[i])
+        tasks.push(
+            {
+                id: formGanttDataList[i].id,
+                name: formGanttDataList[i].id,
+                start: formGanttDataList[i].startTime,
+                end: formGanttDataList[i].endTime,
+                progress: formGanttDataList[i].progress,
+                dependencies: formGanttDataList[i].dependencies
+            },
+           
+        );
+    }
+    tasks.push(
+        {
+            id: projectGanttDataList[0].id,
+            name: projectGanttDataList[0].name,
+            start: projectGanttDataList[0].startTime,
+            end: projectGanttDataList[0].endTime,
+            progress: projectGanttDataList[0].progress,
+            dependencies: projectGanttDataList[0].dependencies
+        },
+    );
+    const gantt = new Gantt("#gantt", tasks);
+</script>

@@ -1,0 +1,142 @@
+﻿@model IEnumerable<BPMPlus.Models.Form>
+@section Style {
+    <style>
+        .content-wrapper {
+            background-image: linear-gradient(120deg, #ffffff 0%, #0079ff2e 100%);
+        }
+
+        .outside {
+            padding: 20px;
+        }
+
+        .title {
+            color: rgba(0, 81, 255, 0.884);
+            font-weight: bold;
+        }
+
+        .inside {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #fff;
+            overflow: hidden;
+            height: 70%;
+            border-radius: 0.25rem;
+            box-shadow: 0 0 1px rgba(0, 0, 0, .125), 0 1px 3px rgba(0, 0, 0, .2);
+        }
+
+        .list {
+            display: flex;
+            justify-content: space-around;
+            list-style: none;
+        }
+
+        #BackToForm {
+            margin-left: auto;
+        }
+
+        #FormCategory {
+            margin-left: auto;
+        }
+
+        table {
+            text-align: center;
+            line-height: 1.5;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css" />
+}
+
+<!-- outside -->
+<div class="outside">
+    <h2 class="title">待辦清單</h2>
+    @if (TempData["AlertMessage"] != null)
+    {
+        <div class="alert alert-warning">
+        @TempData["AlertMessage"]
+        </div>
+    }
+
+    <!-- inside -->
+    <div class="inside">
+
+
+
+        <!-- table -->
+        <table class="table table-hover table-bordered ">
+            <thead>
+                <tr>
+                    <th>單號</th>
+                    <th>部門</th>
+                    <th>員工編號</th>
+                    <th>姓名</th>
+                    <th>需求項目類別</th>
+                    <th>處理狀態</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <a asp-area="" asp-controller="FormReview" asp-action="Index" asp-route-id="@item.FormId">
+                                @Html.DisplayFor(modelItem => item.FormId)
+                            </a>
+                        </td>
+                        <td>
+                            @{
+                                var dapartmentname = ViewBag.Departments[item.DepartmentId];
+
+                            }
+                            @dapartmentname
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.UserId)
+                        </td>
+                        <td>
+                            @{
+                                var userName = ViewBag.UserName[item.UserId];
+
+                            }
+                            @userName
+                        </td>
+                        <td>
+                            @{
+                                var category = ViewBag.category[item.CategoryId];
+
+                            }
+                            @category
+                        </td>
+                        <td>
+                            @{
+                                var process = ViewBag.process[item.ProcessNodeId];
+                                var situation = ViewBag.situation[process];
+
+                            }
+                            @situation
+                        </td>
+
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+</div>
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('table').DataTable({
+
+                paging: true,
+                ordering: true,
+                "language": {
+                    "url": '//cdn.datatables.net/plug-ins/2.1.6/i18n/zh-HANT.json'
+                }
+
+            });
+        });
+    </script>
+}
