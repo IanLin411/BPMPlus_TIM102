@@ -4,6 +4,9 @@
     <projectFile profileName="http">BPMPlus.csproj</projectFile>
     <projectFile profileName="https">BPMPlus.csproj</projectFile>
   </component>
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="63bff56c-3990-4e70-b642-a9805b718684" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
@@ -78,7 +81,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1728499820815</updated>
-      <workItem from="1728499823386" duration="383000" />
+      <workItem from="1728499823386" duration="859000" />
     </task>
     <servers />
   </component>
