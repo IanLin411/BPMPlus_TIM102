@@ -1,7 +1,7 @@
 <h1 align="center" style="font-weight: 700">BPMPlus | 企業流程管理系統 </h1>
 <div align="center" style="margin-bottom:24px">
 
-### [設計稿](https://bpmpluss.azurewebsites.net/Login)
+### [網站入口](https://bpmpluss.azurewebsites.net/Login)
 </div>
 <div align="center" style="margin-bottom:24px">
 
